@@ -629,6 +629,155 @@ body {
 }
 .btn-add-bullet:hover { border-color:var(--accent); color:var(--accent); }
 .node-process { cursor:pointer; }
+
+/* ══ GANTT VIEW ══ */
+.gantt-layout { padding:32px 40px; max-width:1200px; }
+.gantt-header { margin-bottom:24px; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; }
+.gantt-controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.gantt-control-label { font-size:12px; font-weight:600; color:var(--text-muted); }
+.gantt-date-input {
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:13px; color:var(--text);
+  border:1px solid var(--border-card); border-radius:var(--r-sm);
+  padding:7px 12px; background:var(--card); outline:none;
+  cursor:pointer; transition:border-color .15s;
+}
+.gantt-date-input:focus { border-color:var(--accent); }
+.btn-reorder {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--accent-faint); color:var(--accent);
+  border:1px solid rgba(27,180,216,0.25);
+  font-family:'Inter',system-ui,sans-serif;
+  font-size:12px; font-weight:600;
+  padding:7px 14px; border-radius:var(--r-sm);
+  cursor:pointer; transition:all .15s;
+}
+.btn-reorder:hover { background:rgba(27,180,216,0.18); }
+
+.gantt-wrap {
+  background:var(--card);
+  border-radius:var(--r-lg);
+  border:1px solid var(--border-card);
+  box-shadow:var(--shadow-card);
+  overflow:hidden;
+}
+
+/* Header de semanas */
+.gantt-time-header {
+  display:grid;
+  border-bottom:1.5px solid var(--border-card);
+  background:var(--bg);
+  position:sticky; top:0; z-index:10;
+}
+.gantt-th-label {
+  padding:10px 16px;
+  font-size:10px; font-weight:700;
+  letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-muted);
+  border-right:1px solid var(--border);
+  background:var(--bg);
+}
+.gantt-week-cell {
+  padding:10px 6px;
+  font-size:10px; font-weight:600;
+  color:var(--text-muted);
+  text-align:center;
+  border-right:1px solid var(--border);
+}
+.gantt-week-cell.current { color:var(--accent); font-weight:700; }
+
+/* Filas */
+.gantt-row {
+  display:grid;
+  border-bottom:1px solid var(--border);
+  align-items:center;
+  min-height:56px;
+  transition:background .12s;
+  cursor:grab;
+}
+.gantt-row:last-child { border-bottom:none; }
+.gantt-row:hover { background:var(--card-hover); }
+.gantt-row.dragging { opacity:.4; cursor:grabbing; }
+.gantt-row.drag-over-top { box-shadow:0 -2px 0 var(--accent); }
+.gantt-row.drag-over-bottom { box-shadow:0 2px 0 var(--accent); }
+
+.gantt-row-label {
+  padding:10px 16px;
+  border-right:1px solid var(--border);
+  display:flex; align-items:center; gap:10px;
+}
+.gantt-row-num {
+  width:24px; height:24px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:11px; font-weight:800; color:#fff; flex-shrink:0;
+}
+.gantt-row-name {
+  font-size:13px; font-weight:600; color:var(--text);
+  line-height:1.3;
+}
+.gantt-row-pills { display:flex; gap:4px; margin-top:3px; }
+.gantt-pill {
+  font-size:10px; font-weight:600;
+  padding:2px 7px; border-radius:20px;
+}
+.gantt-pill.high-impact { background:rgba(13,159,90,.1); color:var(--green); border:1px solid rgba(13,159,90,.2); }
+.gantt-pill.med-impact  { background:rgba(180,83,9,.1);  color:var(--yellow); border:1px solid rgba(180,83,9,.2); }
+.gantt-pill.high-diff   { background:rgba(196,27,27,.1); color:var(--red);    border:1px solid rgba(196,27,27,.2); }
+.gantt-pill.med-diff    { background:rgba(194,80,10,.1); color:var(--orange); border:1px solid rgba(194,80,10,.2); }
+.gantt-pill.low-diff    { background:rgba(13,159,90,.1); color:var(--green);  border:1px solid rgba(13,159,90,.2); }
+
+/* Celdas de la grilla */
+.gantt-grid-cells {
+  display:contents;
+}
+.gantt-cell {
+  height:56px;
+  border-right:1px solid var(--border);
+  position:relative;
+}
+.gantt-cell.current-week { background:rgba(27,180,216,.04); }
+
+/* Barra */
+.gantt-bar {
+  position:absolute;
+  top:50%; transform:translateY(-50%);
+  height:28px; border-radius:6px;
+  display:flex; align-items:center;
+  padding:0 10px;
+  font-size:11px; font-weight:600; color:#fff;
+  white-space:nowrap; overflow:hidden;
+  cursor:pointer;
+  transition:filter .15s, box-shadow .15s;
+  box-shadow:0 2px 6px rgba(0,0,0,.15);
+  z-index:2;
+}
+.gantt-bar:hover { filter:brightness(1.12); box-shadow:0 4px 12px rgba(0,0,0,.2); }
+
+/* Leyenda */
+.gantt-legend {
+  padding:14px 20px;
+  border-top:1px solid var(--border);
+  display:flex; align-items:center; gap:20px;
+  background:var(--bg);
+  font-size:11px; color:var(--text-muted);
+  flex-wrap:wrap;
+}
+.gantt-legend-item { display:flex; align-items:center; gap:6px; }
+.gantt-legend-dot { width:10px; height:10px; border-radius:3px; }
+
+/* Resumen total */
+.gantt-summary {
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:1px; background:var(--border-card);
+  border-bottom:1px solid var(--border-card);
+}
+.gantt-summary-cell {
+  background:var(--card); padding:14px 20px;
+  text-align:center;
+}
+.gantt-summary-num { font-size:20px; font-weight:800; color:var(--text); letter-spacing:-.3px; }
+.gantt-summary-lbl { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
 </style>
 </head>
 <body>
@@ -647,6 +796,10 @@ body {
     <button class="sb-item" onclick="switchView('oportunidades',this)">
       <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
       Oportunidades
+    </button>
+    <button class="sb-item" onclick="switchView('gantt',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="3" y1="5" x2="14" y2="5"/><line x1="3" y1="9" x2="17" y2="9"/><line x1="3" y1="13" x2="11" y2="13"/><line x1="3" y1="17" x2="15" y2="17"/><circle cx="14" cy="5" r="1.5" fill="currentColor"/><circle cx="17" cy="9" r="1.5" fill="currentColor"/><circle cx="11" cy="13" r="1.5" fill="currentColor"/><circle cx="15" cy="17" r="1.5" fill="currentColor"/></svg>
+      Roadmap
     </button>
     <div class="sb-divider"></div>
     <div class="sb-label">Unidades</div>
@@ -975,6 +1128,59 @@ body {
       <button class="drag-confirm-cancel" onclick="cancelDrag()">Cancelar</button>
     </div>
   </div>
+
+  <!-- GANTT -->
+  <div class="view" id="view-gantt">
+    <div class="kpi-strip" id="gantt-kpi-strip">
+      <div class="kpi-cell">
+        <div class="kpi-icon green"><svg viewBox="0 0 20 20" fill="none" stroke="#0D9F5A" stroke-width="1.6"><path d="M3 5h14M3 9h10M3 13h12M3 17h8"/></svg></div>
+        <div><div class="kpi-num green" id="g-total-weeks">0</div><div class="kpi-lbl">Semanas totales</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon blue"><svg viewBox="0 0 20 20" fill="none" stroke="#1BB4D8" stroke-width="1.6"><rect x="3" y="4" width="14" height="13" rx="2"/><path d="M3 8h14M7 4V2M13 4V2"/></svg></div>
+        <div><div class="kpi-num blue" id="g-end-date">—</div><div class="kpi-lbl">Fecha estimada de término</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon amber"><svg viewBox="0 0 20 20" fill="none" stroke="#B45309" stroke-width="1.6"><polygon points="10,2 12.9,7.6 19,8.5 14.5,12.9 15.6,19 10,16 4.4,19 5.5,12.9 1,8.5 7.1,7.6"/></svg></div>
+        <div><div class="kpi-num amber">3</div><div class="kpi-lbl">Quick wins primeras 8 sem</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon red"><svg viewBox="0 0 20 20" fill="none" stroke="#C41B1B" stroke-width="1.6"><path d="M10 7v4M10 14h.01"/><circle cx="10" cy="10" r="8"/></svg></div>
+        <div><div class="kpi-num red" id="g-opp-count">8</div><div class="kpi-lbl">Iniciativas en roadmap</div></div>
+      </div>
+    </div>
+
+    <div class="gantt-layout">
+      <div class="gantt-header">
+        <div>
+          <div class="page-eyebrow">Planificación secuencial</div>
+          <div class="page-title">Roadmap de implementación</div>
+          <div class="page-desc">Arrastra las filas para reordenar. Haz clic en una barra para ver la ficha.</div>
+        </div>
+        <div class="gantt-controls">
+          <div class="gantt-control-label">Inicio del proyecto</div>
+          <input type="date" class="gantt-date-input" id="gantt-start-date">
+          <button class="btn-reorder" onclick="autoOrderGantt()">
+            <svg width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h12M4 10h8M4 14h10"/><path d="M15 13l3 3-3 3"/></svg>
+            Ordenar por prioridad
+          </button>
+        </div>
+      </div>
+
+      <div class="gantt-wrap">
+        <div id="gantt-time-header" class="gantt-time-header"></div>
+        <div id="gantt-body"></div>
+        <div class="gantt-legend">
+          <span style="font-weight:600;color:var(--text-soft)">Colores por impacto:</span>
+          <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:#0D9F5A"></div>Alto</div>
+          <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:#B45309"></div>Medio</div>
+          <div class="gantt-legend-item"><div class="gantt-legend-dot" style="background:#94A3B8"></div>Bajo</div>
+          <span style="margin-left:auto;color:var(--text-muted)">Arrastra filas para reordenar · Haz clic en barra para ver ficha</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
@@ -988,7 +1194,7 @@ const OPP_DETAIL={1:{desc:'NOW paga $800K mensuales a una empresa externa por un
 var activeUnit=null;
 var UNIT_MAP={'ultima-milla':['recepcion-ordenes','ejecucion-terreno','control-alertas','rendimiento-tecnico'],'retiro':['recepcion-retiro','ejecucion-retiro','control-series','optimizacion-rutas'],'torres':['gestion-hitos','fondos-rendir'],'transversal':['finanzas','rrhh','logistica-flota']};
 
-function switchView(vid,btn){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.getElementById('view-'+vid).classList.add('active');if(btn)btn.classList.add('active');var t={'mapa':'Mapa del negocio','oportunidades':'Oportunidades de mejora'};document.getElementById('topbar-title').textContent=t[vid]||vid;if(vid!=='mapa')closePanel();if(vid==='mapa'){resetUnitHighlight();activeUnit=null;}}
+function switchView(vid,btn){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.getElementById('view-'+vid).classList.add('active');if(btn)btn.classList.add('active');var t={'mapa':'Mapa del negocio','oportunidades':'Oportunidades de mejora','gantt':'Roadmap de implementación'};document.getElementById('topbar-title').textContent=t[vid]||vid;if(vid!=='mapa')closePanel();if(vid==='mapa'){resetUnitHighlight();activeUnit=null;}if(vid==='gantt'){renderGantt();}}
 
 function openPanel(k){var p=PROCESSES[k];if(!p)return;var tag=document.getElementById('panel-unit-tag');tag.textContent=p.unit;tag.style.background=p.unitBg;tag.style.color=p.unitColor;tag.style.border='1px solid '+p.unitColor+'55';document.getElementById('panel-title').textContent=p.title;document.getElementById('panel-desc').textContent=p.desc;var h='<div class="panel-section"><div class="panel-section-title">Actores</div><div class="actor-list">'+p.actors.map(function(a){return '<span class="actor-chip">'+a+'</span>';}).join('')+'</div></div>';h+='<div class="panel-section"><div class="panel-section-title">Flujo de información</div><div class="io-row"><div class="io-box"><div class="io-box-label in">↓ Inputs</div>'+p.inputs.map(function(i){return '<div class="io-item"><span class="io-dot in"></span>'+i+'</div>';}).join('')+'</div><div class="io-box"><div class="io-box-label out">↑ Outputs</div>'+p.outputs.map(function(o){return '<div class="io-item"><span class="io-dot out"></span>'+o+'</div>';}).join('')+'</div></div></div>';h+='<div class="panel-section"><div class="panel-section-title">Oportunidades de mejora</div>'+p.opps.map(function(op){return '<div class="opp-chip" onclick="scrollToOpp('+op.ref+')"><span class="opp-chip-icon">⚡</span><div><div class="opp-chip-text">'+op.text+'</div><span class="opp-chip-tag">'+op.tag+'</span></div></div>';}).join('')+'</div>';document.getElementById('panel-body').innerHTML=h;document.getElementById('detail-panel').classList.add('open');}
 function closePanel(){document.getElementById('detail-panel').classList.remove('open');}
