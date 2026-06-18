@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NOW Control · Detector de Oportunidades</title>
+<style>
+:root{
+  --green:#00C46A;--green2:#00A558;--green-dim:rgba(0,196,106,.1);--green-border:rgba(0,196,106,.18);
+  --navy:#060D1A;--navy2:#0B1525;--navy3:#0F1E35;--navy4:#152847;
+  --text:#F0F4FF;--text2:rgba(240,244,255,.65);--text3:rgba(240,244,255,.35);--text4:rgba(240,244,255,.18);
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --red:#F04438;--red-dim:rgba(240,68,56,.12);
+  --amber:#F79009;--amber-dim:rgba(247,144,9,.12);
+  --blue:#2E90FA;--blue-dim:rgba(46,144,250,.1);
+  --purple:#7A5AF8;--purple-dim:rgba(122,90,248,.1);
+  --sidebar-w:224px;
+  --r:10px;--r-sm:7px;--r-lg:14px;
+  --sh:0 1px 3px rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.3);
+  --sh-md:0 4px 16px rgba(0,0,0,.4),0 2px 6px rgba(0,0,0,.25);
+  --sh-lg:0 8px 32px rgba(0,0,0,.5),0 4px 12px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--navy);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:200;}
+.sb-brand{padding:22px 18px 16px;border-bottom:1px solid var(--border);}
+.sb-brand img{width:100px;height:auto;display:block;margin-bottom:6px;}
+.sb-sub{font-size:10px;color:var(--text3);font-weight:500;letter-spacing:.04em;}
+.sb-nav{padding:12px 8px;flex:1;}
+.sb-label{font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--text4);padding:8px 10px 4px;}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;transition:all .15s;margin-bottom:2px;color:var(--text3);font-size:12.5px;font-weight:500;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+.sb-item:hover{background:rgba(255,255,255,.04);color:var(--text2);}
+.sb-item.active{background:var(--green-dim);color:var(--green);font-weight:600;border:1px solid var(--green-border);}
+.sb-icon{width:15px;height:15px;flex-shrink:0;opacity:.5;}
+.sb-item.active .sb-icon{opacity:1;}
+.sb-divider{height:1px;background:var(--border);margin:8px 10px;}
+.sb-footer{padding:14px 18px;border-top:1px solid var(--border);font-size:10px;color:var(--text4);}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
+
+/* TOPBAR */
+.topbar{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar-left{display:flex;align-items:center;gap:12px;}
+.topbar-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px;}
+.topbar-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.topbar-meta{font-size:11px;color:var(--text3);background:rgba(255,255,255,.04);padding:4px 12px;border-radius:20px;border:1px solid var(--border);}
+
+/* VIEWS */
+.view{display:none;}
+.view.active{display:flex;flex-direction:column;flex:1;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* KPI STRIP */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.kpi-cell{background:var(--navy2);padding:16px 24px;display:flex;align-items:center;gap:14px;}
+.kpi-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kpi-icon.green{background:var(--green-dim);border:1px solid var(--green-border);}
+.kpi-icon.red{background:var(--red-dim);border:1px solid rgba(240,68,56,.2);}
+.kpi-icon.amber{background:var(--amber-dim);border:1px solid rgba(247,144,9,.2);}
+.kpi-icon.blue{background:var(--blue-dim);border:1px solid rgba(46,144,250,.15);}
+.kpi-icon svg{width:18px;height:18px;}
+.kpi-num{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.5px;line-height:1;}
+.kpi-num.green{color:var(--green);}
+.kpi-num.red{color:var(--red);}
+.kpi-num.amber{color:var(--amber);}
+.kpi-num.blue{color:var(--blue);}
+.kpi-lbl{font-size:11px;color:var(--text3);margin-top:3px;font-weight:400;}
+
+/* MAP VIEW */
+.map-layout{display:flex;flex:1;min-height:calc(100vh - 54px);}
+.map-canvas{flex:1;padding:28px;overflow:auto;background:var(--navy);}
+#diagram-svg{width:100%;height:600px;}
+
+/* DETAIL PANEL */
+.detail-panel{width:0;overflow:hidden;background:var(--navy2);border-left:1px solid var(--border);transition:width .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;display:flex;flex-direction:column;}
+.detail-panel.open{width:400px;overflow-y:auto;}
+.panel-header{padding:20px 20px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--navy2);z-index:10;}
+.panel-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;float:right;padding:3px 5px;border-radius:5px;transition:all .12s;line-height:1;}
+.panel-close:hover{background:rgba(255,255,255,.06);color:var(--text);}
+.panel-unit-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:8px;}
+.panel-title{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-.3px;line-height:1.25;}
+.panel-desc{font-size:12.5px;color:var(--text2);line-height:1.6;margin-top:5px;}
+.panel-body{padding:18px 20px;}
+.panel-section{margin-bottom:20px;}
+.panel-section-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+.actor-list{display:flex;flex-wrap:wrap;gap:5px;}
+.actor-chip{font-size:11.5px;font-weight:500;background:rgba(255,255,255,.05);color:var(--text2);padding:4px 10px;border-radius:20px;border:1px solid var(--border);}
+.io-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.io-box{background:var(--navy3);border-radius:var(--r-sm);border:1px solid var(--border);padding:11px 12px;}
+.io-box-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;}
+.io-box-label.in{color:var(--blue);}
+.io-box-label.out{color:var(--green);}
+.io-item{font-size:11.5px;color:var(--text2);padding:3px 0;display:flex;align-items:flex-start;gap:6px;line-height:1.4;}
+.io-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:6px;}
+.io-dot.in{background:var(--blue);}
+.io-dot.out{background:var(--green);}
+.opp-chip{display:flex;align-items:flex-start;gap:8px;background:rgba(247,144,9,.07);border:1px solid rgba(247,144,9,.2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:all .15s;}
+.opp-chip:hover{border-color:var(--amber);background:rgba(247,144,9,.1);}
+.opp-chip-icon{font-size:12px;flex-shrink:0;margin-top:1px;}
+.opp-chip-text{font-size:12px;color:var(--text2);line-height:1.5;font-weight:500;}
+.opp-chip-tag{display:inline-block;font-size:9px;font-weight:700;background:rgba(247,144,9,.12);color:var(--amber);padding:2px 7px;border-radius:20px;margin-top:4px;letter-spacing:.04em;}
+
+/* OPPS VIEW */
+.opps-layout{padding:28px 32px;max-width:1100px;}
+.page-header{margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;}
+.page-eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:6px;}
+.page-title{font-size:26px;font-weight:800;color:var(--text);letter-spacing:-.5px;margin-bottom:4px;}
+.page-desc{font-size:13px;color:var(--text3);line-height:1.6;}
+.btn-add{display:inline-flex;align-items:center;gap:7px;background:var(--green);color:#fff;font-size:13px;font-weight:700;padding:9px 18px;border-radius:var(--r-sm);border:none;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;box-shadow:0 0 20px rgba(0,196,106,.25);}
+.btn-add:hover{background:var(--green2);box-shadow:0 0 28px rgba(0,196,106,.35);}
+
+/* MATRIX */
+.matrix-wrap{background:var(--navy2);border-radius:var(--r-lg);border:1px solid var(--border);padding:22px 22px 14px;margin-bottom:20px;}
+.matrix-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px;letter-spacing:-.1px;}
+.matrix-hint{font-size:11px;color:var(--text3);margin-left:auto;font-weight:400;}
+.matrix-outer{display:grid;grid-template-columns:22px 1fr;grid-template-rows:1fr 26px;gap:6px;height:320px;}
+.matrix-y-label{grid-row:1;grid-column:1;display:flex;align-items:center;justify-content:center;}
+.matrix-y-text{font-size:9px;font-weight:700;color:var(--text4);letter-spacing:.1em;text-transform:uppercase;writing-mode:vertical-rl;transform:rotate(180deg);}
+.matrix-quads{grid-row:1;grid-column:2;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:6px;height:100%;}
+.matrix-x-labels{grid-row:2;grid-column:2;display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.matrix-x-label{font-size:9px;font-weight:700;color:var(--text4);letter-spacing:.08em;text-transform:uppercase;text-align:center;}
+.matrix-cell{border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:5px;min-height:0;transition:all .15s;}
+.matrix-cell.drag-over{box-shadow:0 0 0 2px var(--green) inset;}
+.matrix-cell.q1{background:rgba(240,68,56,.06);border:1px solid rgba(240,68,56,.18);}
+.matrix-cell.q2{background:rgba(0,196,106,.06);border:1px solid rgba(0,196,106,.2);}
+.matrix-cell.q3{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.1);}
+.matrix-cell.q4{background:rgba(247,144,9,.06);border:1px solid rgba(247,144,9,.18);}
+.matrix-cell-label{font-size:8.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.55;line-height:1.3;}
+.matrix-cell.q1 .matrix-cell-label{color:var(--red);}
+.matrix-cell.q2 .matrix-cell-label{color:var(--green);}
+.matrix-cell.q3 .matrix-cell-label{color:var(--text3);}
+.matrix-cell.q4 .matrix-cell-label{color:var(--amber);}
+.matrix-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--text2);background:var(--navy3);border:1px solid var(--border2);padding:4px 9px;border-radius:20px;cursor:grab;transition:all .15s;width:fit-content;max-width:100%;user-select:none;}
+.matrix-chip:hover{border-color:var(--green);color:var(--green);background:var(--navy4);}
+.matrix-chip:active{cursor:grabbing;opacity:.7;transform:scale(.96);}
+.matrix-chip-num{font-size:10px;font-weight:800;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;}
+
+/* DRAG CONFIRM */
+.drag-confirm{position:fixed;z-index:2000;background:var(--navy4);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh-lg);font-size:13px;max-width:280px;display:none;}
+.drag-confirm.visible{display:block;}
+.drag-confirm-title{font-weight:700;margin-bottom:4px;font-size:13px;color:var(--text);}
+.drag-confirm-desc{font-size:11.5px;color:var(--text3);margin-bottom:12px;line-height:1.5;}
+.drag-confirm-btns{display:flex;gap:8px;}
+.drag-confirm-ok{flex:1;background:var(--green);color:#fff;border:none;font-family:inherit;font-size:12px;font-weight:700;padding:7px 12px;border-radius:6px;cursor:pointer;}
+.drag-confirm-cancel{flex:1;background:rgba(255,255,255,.06);color:var(--text2);border:1px solid var(--border);font-family:inherit;font-size:12px;font-weight:500;padding:7px 12px;border-radius:6px;cursor:pointer;}
+.drag-confirm-ok:hover{background:var(--green2);}
+
+/* OPP LIST */
+.opp-list-wrap{background:var(--navy2);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;}
+.opp-list-header{display:grid;grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;gap:12px;padding:10px 18px;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text4);border-bottom:1px solid var(--border);background:var(--navy3);}
+.opp-list-row{display:grid;grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;gap:12px;padding:12px 18px;align-items:center;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border);}
+.opp-list-row:last-child{border-bottom:none;}
+.opp-list-row:hover{background:rgba(255,255,255,.03);}
+.opp-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
+.opp-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3;}
+.pill{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.pill.high-impact{background:rgba(0,196,106,.1);color:var(--green);border:1px solid rgba(0,196,106,.2);}
+.pill.med-impact{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(247,144,9,.2);}
+.pill.low-impact{background:rgba(255,255,255,.05);color:var(--text3);border:1px solid var(--border);}
+.pill.high-diff{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,68,56,.2);}
+.pill.med-diff{background:rgba(247,144,9,.08);color:var(--amber);border:1px solid rgba(247,144,9,.18);}
+.pill.low-diff{background:rgba(0,196,106,.1);color:var(--green);border:1px solid rgba(0,196,106,.2);}
+.time-badge{font-size:11px;color:var(--text3);font-weight:500;}
+.row-actions{display:flex;gap:5px;}
+.row-btn{background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-weight:500;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .12s;}
+.row-btn:hover{border-color:var(--green);color:var(--green);}
+.row-btn.del:hover{border-color:var(--red);color:var(--red);}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.visible{display:flex;}
+.modal{background:var(--navy2);border:1px solid var(--border2);border-radius:var(--r-lg);width:640px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:modalIn .2s ease;}
+@keyframes modalIn{from{opacity:0;transform:scale(.97) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
+.modal-header{padding:22px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;position:sticky;top:0;background:var(--navy2);z-index:2;}
+.modal-header-left{flex:1;}
+.modal-num{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;margin-top:2px;}
+.modal-title{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.3px;line-height:1.2;}
+.modal-unit{font-size:12px;color:var(--text3);margin-top:3px;font-weight:500;}
+.modal-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:17px;padding:3px 5px;line-height:1;border-radius:5px;transition:all .12s;flex-shrink:0;}
+.modal-close:hover{background:rgba(255,255,255,.06);color:var(--text);}
+.modal-body{padding:22px 24px;}
+.modal-indicators{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
+.modal-ind{background:var(--navy3);border-radius:var(--r-sm);border:1px solid var(--border);padding:13px 14px;text-align:center;}
+.modal-ind-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text4);margin-bottom:8px;}
+.modal-section{margin-bottom:20px;}
+.modal-section-title{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+.modal-desc{font-size:13.5px;color:var(--text2);line-height:1.7;}
+.modal-bullets{list-style:none;}
+.modal-bullets li{font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.modal-bullets li:last-child{border-bottom:none;}
+.bullet-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;}
+.tech-tags{display:flex;flex-wrap:wrap;gap:7px;}
+.tech-tag{font-size:11.5px;font-weight:500;background:rgba(255,255,255,.05);color:var(--text2);padding:4px 11px;border-radius:20px;border:1px solid var(--border);}
+.modal-footer{padding:14px 24px 20px;display:flex;gap:9px;justify-content:flex-end;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--navy2);z-index:2;}
+.btn-edit{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);font-family:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;}
+.btn-edit:hover{border-color:var(--green);color:var(--green);}
+.btn-edit.save{background:var(--green);border-color:var(--green);color:#fff;}
+.btn-edit.save:hover{background:var(--green2);}
+.btn-delete{background:none;border:1px solid rgba(240,68,56,.3);color:var(--red);font-family:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;margin-right:auto;}
+.btn-delete:hover{background:var(--red-dim);}
+.edit-field{width:100%;font-family:inherit;font-size:13.5px;color:var(--text);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 12px;background:var(--navy3);outline:none;transition:border-color .12s;resize:vertical;}
+.edit-field:focus{border-color:var(--green);}
+.edit-select{font-family:inherit;font-size:13px;color:var(--text);border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 10px;background:var(--navy3);outline:none;cursor:pointer;}
+.edit-select:focus{border-color:var(--green);}
+.edit-bullets-wrap{display:flex;flex-direction:column;gap:5px;}
+.edit-bullet-row{display:flex;gap:5px;align-items:center;}
+.edit-bullet-input{flex:1;}
+.btn-remove-bullet{background:none;border:1px solid var(--border);color:var(--text3);font-size:13px;width:28px;height:28px;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;}
+.btn-remove-bullet:hover{border-color:var(--red);color:var(--red);}
+.btn-add-bullet{background:none;border:1px dashed var(--border2);color:var(--text3);font-family:inherit;font-size:12px;font-weight:600;padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;text-align:left;margin-top:4px;}
+.btn-add-bullet:hover{border-color:var(--green);color:var(--green);}
+.node-process{cursor:pointer;}
+</style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sb-brand">
+    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAEHElEQVR4nO3c25LbKBAAULyV//9l70tU5XJGNogGmtE5T8nYQiBocZ0pBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC4o8fqDLx7Pp/PUkp5PB6P4//Hv6+m9SoqravpjEqrJw3O/VmdgRmiGs9r0Eal1eN4eUTkh5+lDZDISo96y/72PPGv/1Zn4Mzjr2xpHelFpBGVTikCZZS0PUikqLd1xLzoPU+9+RIYdDkaUKaGlDFPAAAAAKmlPJ4QeRQj071bVq2yHGVZeY8M0m4Uvpq1HDriPs8XM647S6s3jQz3WGGLACllzwqIynNUoETJlJfRtgmQUvapmFENuifNXZ5dNlsFSCn5K3p0/laX/9P9V+dthC3PYkWchRqhtoF8yntNGt/K7wh8nO16kEO2BlCTn5oTvLWnfK+Uv/eZZXvmM2wbIKXkqbBv+bhytL3mmizlf5UxTz22DpBS8ldIxBH7K0OyjEPQHaULkBVDhx6f7p3tl7RKuf6sWq7L/tJqERIgkZtakX+gYaWVu/93FtkWS+lYxTrLwOvPZ3fzs1e3Zg9vWlenolazsgfgt7bYUx+XepDaB7biwWavzF5nlZ1tCDSrHmqXxa/mpzlAWm8U+f3Hi8h7XmFyvN6Mep4ySR8xN8kQJDvo7XGyPsdZizlNATL6YbWmf9e3dYZyP9789J1R7WVm0E47atJTqKvHKmZP2jM03Egzh5EjRhk/pdnaJtLtg7yrKUzv2aZPsg4xWsx4w0f+gleUiEBOHyC1RgXJb+sVakX1Ht+efVRwjKqn1AFy5fzS2We/oSfokTHQI+vkbDjVm27KALlyuO/12rPP7h4kP5kxzBrVeD+luXwnvdXsyfKKifvsRYFRVu7x1N6j5iRHT/qHpgCJOrowQ6bVrWhX6+DsmWTZWc9YJ1OGWKsK/m24dVRaz1GEu6itw1l1feU+V65pDpDIifMMo3bcZ2+O8a+WtnW1HV7qQWom0T0T7WgZ1+iv6p0fzHjzznq7117XU/9dk/QsAbDKpzF91t3m32hkO0y5zDvC7GCObsyf0tv9RZU5/7cJkFLGdP0z9l2ig23G2D1zo29xqwApZb+eJHpdnza3C5BS4htVzUpZa6DUXNNTjtGT28h8rHTLACllfpCU8v0PCnz7vPV+q+2Qx2+2L0Cv6MY4Y6UpquHNGL7tvrhw2x7k0DMJj/h+q8j0P6W1Q+Od4fYBUsqY4dYOac5wluddyiJA/hpRYRGNekVg7NJ4Z/Ag3ryOmVfuhs9spO95Gl1uAQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZPc/k+D4WWeY2ucAAAAASUVORK5CYII=" alt="NOW">
+    <div class="sb-sub">Detector de oportunidades &middot; NPR</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-label">Vistas</div>
+    <button class="sb-item active" onclick="switchView('mapa',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="3"/><circle cx="3" cy="5" r="2"/><circle cx="17" cy="5" r="2"/><circle cx="3" cy="15" r="2"/><circle cx="17" cy="15" r="2"/><line x1="5" y1="5" x2="8" y2="9"/><line x1="15" y1="5" x2="12" y2="9"/><line x1="5" y1="15" x2="8" y2="11"/><line x1="15" y1="15" x2="12" y2="11"/></svg>
+      Mapa del negocio
+    </button>
+    <button class="sb-item" onclick="switchView('oportunidades',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>
+      Oportunidades
+    </button>
+    <div class="sb-divider"></div>
+    <div class="sb-label">Unidades</div>
+    <button class="sb-item" onclick="filterUnit('ultima-milla',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2L18 7v6l-8 5-8-5V7z"/></svg>
+      Última milla
+    </button>
+    <button class="sb-item" onclick="filterUnit('retiro',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h12v8H4z"/><path d="M7 12v4M13 12v4M2 16h16"/></svg>
+      Retiro
+    </button>
+    <button class="sb-item" onclick="filterUnit('torres',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 2v16M6 6l4-4 4 4M5 10l5-2 5 2M4 14l6-2 6 2"/></svg>
+      Torres
+    </button>
+    <button class="sb-item" onclick="filterUnit('transversal',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="7"/><path d="M10 3v14M3 10h14"/></svg>
+      Transversal
+    </button>
+  </nav>
+  <div class="sb-footer">NOW / NDX &middot; Junio 2025</div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title" id="topbar-title">Mapa del negocio</div>
+      <div class="topbar-badge">Detector de oportunidades NPR</div>
+    </div>
+    <div class="topbar-meta">NOW / NDX &middot; 4 unidades &middot; 8 iniciativas</div>
+  </div>
+
+  <!-- MAPA -->
+  <div class="view active" id="view-mapa">
+    <div class="kpi-strip">
+      <div class="kpi-cell">
+        <div class="kpi-icon green"><svg viewBox="0 0 20 20" fill="none" stroke="#00C46A" stroke-width="1.6"><path d="M10 2L18 7v6l-8 5-8-5V7z"/></svg></div>
+        <div><div class="kpi-num green">4</div><div class="kpi-lbl">Unidades de negocio</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon blue"><svg viewBox="0 0 20 20" fill="none" stroke="#2E90FA" stroke-width="1.6"><circle cx="10" cy="9" r="3"/><path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
+        <div><div class="kpi-num blue">130</div><div class="kpi-lbl">T&eacute;cnicos nacionales</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon amber"><svg viewBox="0 0 20 20" fill="none" stroke="#F79009" stroke-width="1.6"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg></div>
+        <div><div class="kpi-num amber">8</div><div class="kpi-lbl">Iniciativas identificadas</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon red"><svg viewBox="0 0 20 20" fill="none" stroke="#F04438" stroke-width="1.6"><path d="M10 7v4M10 14h.01"/><circle cx="10" cy="10" r="8"/></svg></div>
+        <div><div class="kpi-num red">$5MM</div><div class="kpi-lbl">Multas recuperables/sem</div></div>
+      </div>
+    </div>
+    <div class="map-layout">
+      <div class="map-canvas" id="map-canvas">
+        <svg id="diagram-svg" viewBox="0 0 900 580" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M1,1 L7,4 L1,7" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.2"/>
+            </marker>
+            <filter id="glow-node" x="-10%" y="-10%" width="120%" height="120%">
+              <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="rgba(0,0,0,0.5)"/>
+            </filter>
+          </defs>
+
+          <!-- ULTIMA MILLA -->
+          <rect x="30" y="30" width="390" height="230" rx="14" fill="rgba(0,196,106,0.04)" stroke="rgba(0,196,106,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <text x="50" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#00C46A" letter-spacing="1.5">ÚLTIMA MILLA</text>
+          <text x="50" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(0,196,106,0.5)">Claro · WOM · 130 técnicos</text>
+
+          <g class="node-process" onclick="openPanel('recepcion-ordenes')">
+            <rect x="50" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="50" y="84" width="3" height="64" rx="1.5" fill="#00C46A"/>
+            <text x="65" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Recepción</text>
+            <text x="65" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">de órdenes</text>
+            <circle cx="184" cy="93" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
+            <text x="184" y="97" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('ejecucion-terreno')">
+            <rect x="220" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="220" y="84" width="3" height="64" rx="1.5" fill="#00C46A"/>
+            <text x="235" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Ejecución</text>
+            <text x="235" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">en terreno</text>
+            <circle cx="354" cy="93" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
+            <text x="354" y="97" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('control-alertas')">
+            <rect x="50" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="50" y="174" width="3" height="64" rx="1.5" fill="#F04438"/>
+            <text x="65" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Control de</text>
+            <text x="65" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">alertas DPN</text>
+            <circle cx="184" cy="183" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
+            <text x="184" y="187" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('rendimiento-tecnico')">
+            <rect x="220" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(122,90,248,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="220" y="174" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
+            <text x="235" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Rendimiento</text>
+            <text x="235" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">por técnico</text>
+            <circle cx="354" cy="183" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
+            <text x="354" y="187" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
+          </g>
+
+          <line x1="198" y1="116" x2="218" y2="116" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="124" y1="148" x2="124" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="294" y1="148" x2="294" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+
+          <!-- RETIRO -->
+          <rect x="450" y="30" width="420" height="230" rx="14" fill="rgba(46,144,250,0.04)" stroke="rgba(46,144,250,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <text x="470" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#2E90FA" letter-spacing="1.5">RETIRO / LOGÍSTICA INVERSA</text>
+          <text x="470" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(46,144,250,0.5)">Verisur · Movistar · Claro · BTR · Prosegur · ADT</text>
+
+          <g class="node-process" onclick="openPanel('recepcion-retiro')">
+            <rect x="470" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="470" y="84" width="3" height="64" rx="1.5" fill="#2E90FA"/>
+            <text x="485" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Recepción</text>
+            <text x="485" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">listado retiros</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('ejecucion-retiro')">
+            <rect x="640" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="640" y="84" width="3" height="64" rx="1.5" fill="#2E90FA"/>
+            <text x="655" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Ejecución</text>
+            <text x="655" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y trazabilidad</text>
+            <circle cx="774" cy="93" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
+            <text x="774" y="97" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('control-series')">
+            <rect x="470" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="470" y="174" width="3" height="64" rx="1.5" fill="#F04438"/>
+            <text x="485" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Control de</text>
+            <text x="485" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">series / stock</text>
+            <circle cx="604" cy="183" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
+            <text x="604" y="187" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('optimizacion-rutas')">
+            <rect x="640" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(122,90,248,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="640" y="174" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
+            <text x="655" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Optimización</text>
+            <text x="655" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">de rutas</text>
+            <circle cx="774" cy="183" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
+            <text x="774" y="187" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
+          </g>
+
+          <line x1="618" y1="116" x2="638" y2="116" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="544" y1="148" x2="544" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="714" y1="148" x2="714" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+
+          <!-- TORRES -->
+          <rect x="30" y="292" width="280" height="178" rx="14" fill="rgba(247,144,9,0.04)" stroke="rgba(247,144,9,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <text x="50" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#F79009" letter-spacing="1.5">TORRES</text>
+          <text x="50" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(247,144,9,0.5)">Construcción sitios telco</text>
+
+          <g class="node-process" onclick="openPanel('gestion-hitos')">
+            <rect x="50" y="346" width="110" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="50" y="346" width="3" height="64" rx="1.5" fill="#F79009"/>
+            <text x="65" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Gestión</text>
+            <text x="65" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">de hitos</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('fondos-rendir')">
+            <rect x="180" y="346" width="110" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="180" y="346" width="3" height="64" rx="1.5" fill="#F04438"/>
+            <text x="195" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="700" fill="#F0F4FF">Fondos</text>
+            <text x="195" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10" fill="rgba(240,244,255,0.5)">por rendir</text>
+            <circle cx="276" cy="355" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
+            <text x="276" y="359" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
+          </g>
+
+          <line x1="160" y1="378" x2="178" y2="378" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+
+          <!-- TRANSVERSAL -->
+          <rect x="330" y="292" width="540" height="178" rx="14" fill="rgba(122,90,248,0.04)" stroke="rgba(122,90,248,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <text x="350" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#7A5AF8" letter-spacing="1.5">ADMINISTRACIÓN · RRHH · LOGÍSTICA</text>
+          <text x="350" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(122,90,248,0.5)">Áreas transversales · todas las unidades</text>
+
+          <g class="node-process" onclick="openPanel('finanzas')">
+            <rect x="350" y="346" width="130" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="350" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
+            <text x="365" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Finanzas</text>
+            <text x="365" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y contabilidad</text>
+            <circle cx="466" cy="355" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
+            <text x="466" y="359" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('rrhh')">
+            <rect x="500" y="346" width="130" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="500" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
+            <text x="515" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">RRHH</text>
+            <text x="515" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y técnicos</text>
+            <circle cx="616" cy="355" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
+            <text x="616" y="359" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
+          </g>
+
+          <g class="node-process" onclick="openPanel('logistica-flota')">
+            <rect x="650" y="346" width="130" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="650" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
+            <text x="665" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Logística</text>
+            <text x="665" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y flota</text>
+            <circle cx="766" cy="355" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
+            <text x="766" y="359" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
+          </g>
+
+          <!-- LEYENDA -->
+          <rect x="30" y="498" width="840" height="1" fill="rgba(255,255,255,0.06)"/>
+          <circle cx="50" cy="520" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
+          <text x="50" y="524" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
+          <text x="62" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.35)">Dolor crítico</text>
+          <circle cx="158" cy="520" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
+          <text x="158" y="524" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
+          <text x="170" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.35)">Oportunidad de mejora</text>
+          <circle cx="310" cy="520" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
+          <text x="310" y="524" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
+          <text x="322" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.35)">Potencial IA</text>
+          <text x="480" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.2)">Haz clic en cualquier proceso para ver el detalle →</text>
+        </svg>
+      </div>
+
+      <div class="detail-panel" id="detail-panel">
+        <div class="panel-header">
+          <button class="panel-close" onclick="closePanel()">✕</button>
+          <div class="panel-unit-tag" id="panel-unit-tag"></div>
+          <div class="panel-title" id="panel-title"></div>
+          <div class="panel-desc" id="panel-desc"></div>
+        </div>
+        <div class="panel-body" id="panel-body"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPORTUNIDADES -->
+  <div class="view" id="view-oportunidades">
+    <div class="kpi-strip">
+      <div class="kpi-cell">
+        <div class="kpi-icon green"><svg viewBox="0 0 20 20" fill="none" stroke="#00C46A" stroke-width="1.6"><polygon points="10,2 12.9,7.6 19,8.5 14.5,12.9 15.6,19 10,16 4.4,19 5.5,12.9 1,8.5 7.1,7.6"/></svg></div>
+        <div><div class="kpi-num green">3</div><div class="kpi-lbl">Quick wins (alto/baja)</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon amber"><svg viewBox="0 0 20 20" fill="none" stroke="#F79009" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 6v4l3 3"/></svg></div>
+        <div><div class="kpi-num amber">4–6</div><div class="kpi-lbl">Semanas el más rápido</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon red"><svg viewBox="0 0 20 20" fill="none" stroke="#F04438" stroke-width="1.6"><path d="M10 7v4M10 14h.01"/><circle cx="10" cy="10" r="8"/></svg></div>
+        <div><div class="kpi-num red">$800K</div><div class="kpi-lbl">Ahorro mensual potencial</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon blue"><svg viewBox="0 0 20 20" fill="none" stroke="#2E90FA" stroke-width="1.6"><path d="M3 17l4-8 4 4 3-5 3 9"/></svg></div>
+        <div><div class="kpi-num blue">8</div><div class="kpi-lbl">Iniciativas totales</div></div>
+      </div>
+    </div>
+    <div class="opps-layout">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Priorización estratégica</div>
+          <div class="page-title">Oportunidades de mejora</div>
+          <div class="page-desc">Arrastra los chips en la matriz para repriorizar. Haz clic en cualquier iniciativa para ver su ficha.</div>
+        </div>
+        <button class="btn-add" onclick="openModal(null,'new')">+ Nueva oportunidad</button>
+      </div>
+
+      <div class="matrix-wrap">
+        <div class="matrix-title">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="rgba(240,244,255,0.4)" stroke-width="1.8"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="11" y="3" width="6" height="6" rx="1"/><rect x="3" y="11" width="6" height="6" rx="1"/><rect x="11" y="11" width="6" height="6" rx="1"/></svg>
+          Matriz Impacto vs Dificultad
+          <span class="matrix-hint">Arrastra para repriorizar · clic para abrir ficha</span>
+        </div>
+        <div class="matrix-outer">
+          <div class="matrix-y-label"><div class="matrix-y-text">← Impacto →</div></div>
+          <div class="matrix-quads">
+            <div class="matrix-cell q1" id="quad-alto-alta" data-impact="Alto" data-diff="Alta" ondragover="onQuadOver(event,this)" ondragleave="onQuadLeave(this)" ondrop="onQuadDrop(event,this)">
+              <div class="matrix-cell-label">Alto impacto · Alta dificultad</div>
+            </div>
+            <div class="matrix-cell q2" id="quad-alto-baja" data-impact="Alto" data-diff="Baja" ondragover="onQuadOver(event,this)" ondragleave="onQuadLeave(this)" ondrop="onQuadDrop(event,this)">
+              <div class="matrix-cell-label">⭐ Alto impacto · Baja dificultad — Hacer primero</div>
+            </div>
+            <div class="matrix-cell q3" id="quad-medio-alta" data-impact="Medio" data-diff="Alta" ondragover="onQuadOver(event,this)" ondragleave="onQuadLeave(this)" ondrop="onQuadDrop(event,this)">
+              <div class="matrix-cell-label">Medio impacto · Alta dificultad</div>
+            </div>
+            <div class="matrix-cell q4" id="quad-medio-baja" data-impact="Medio" data-diff="Baja" ondragover="onQuadOver(event,this)" ondragleave="onQuadLeave(this)" ondrop="onQuadDrop(event,this)">
+              <div class="matrix-cell-label">Medio impacto · Baja dificultad</div>
+            </div>
+          </div>
+          <div></div>
+          <div class="matrix-x-labels">
+            <div class="matrix-x-label">← Alta dificultad</div>
+            <div class="matrix-x-label">Baja dificultad →</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="opp-list-wrap">
+        <div class="opp-list-header">
+          <div>#</div><div>Iniciativa</div><div>Unidad</div>
+          <div>Impacto</div><div>Dificultad</div><div>Tiempo</div><div>Acciones</div>
+        </div>
+        <div id="opp-list-rows"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModalOverlay(event)">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-num" id="modal-num"></div>
+        <div class="modal-header-left">
+          <div class="modal-title" id="modal-title"></div>
+          <div class="modal-unit" id="modal-unit"></div>
+        </div>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-footer" id="modal-footer"></div>
+    </div>
+  </div>
+
+  <div class="drag-confirm" id="drag-confirm">
+    <div class="drag-confirm-title" id="dc-title"></div>
+    <div class="drag-confirm-desc" id="dc-desc"></div>
+    <div class="drag-confirm-btns">
+      <button class="drag-confirm-ok" onclick="confirmDrag()">Confirmar</button>
+      <button class="drag-confirm-cancel" onclick="cancelDrag()">Cancelar</button>
+    </div>
+  </div>
+</main>
+
+<script>
+
+const PROCESSES = {'recepcion-ordenes':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Recepción de órdenes',desc:'Ingreso y distribución de órdenes de trabajo desde los sistemas de Claro y WOM hacia los técnicos disponibles.',actors:['Operador de turno','Sistema mandante (Claro/WOM)','Supervisor de zona'],inputs:['Listado de órdenes diarias','Disponibilidad de técnicos','Mapa de zonas'],outputs:['Órdenes asignadas por técnico','Ruta estimada del día','Confirmación al mandante'],opps:[{text:'Asignación automática por algoritmo de proximidad y carga de trabajo',tag:'Automatización',ref:5},{text:'Notificación push al técnico con contexto completo de la orden',tag:'Quick win',ref:1}]},'ejecucion-terreno':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Ejecución en terreno',desc:'El técnico realiza la instalación o reparación en el domicilio del cliente final y registra el resultado.',actors:['Técnico de campo','Cliente final','Supervisor (remoto)'],inputs:['Orden de trabajo asignada','Equipos y materiales','Instrucciones del mandante'],outputs:['Actividad cerrada en sistema','Evidencia fotográfica','Equipos retirados si aplica'],opps:[{text:'Detección automática de inactividad prolongada o discrepancia GPS vs sistema',tag:'IA detección',ref:7},{text:'KPI individual: tiempo promedio, tasa de cierre, multas generadas',tag:'Analytics',ref:4}]},'control-alertas':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Control de alertas DPN',desc:'Gestión de alertas de desconexión que generan multas si no se atienden dentro del SLA del mandante.',actors:['Operador de alertas','Sistema DPN externo ($800K/mes)','Técnico de campo'],inputs:['Alerta de desconexión','Estado del técnico más cercano','Ventana de tiempo SLA'],outputs:['Técnico despachado','Alerta gestionada','Registro de multa si aplica'],opps:[{text:'Reemplazar sistema externo ($800K/mes) con solución propia integrada a APIs mandantes',tag:'💰 Ahorro directo',ref:1},{text:'Disparo automático + asignación al técnico más cercano antes del vencimiento SLA',tag:'Automatización crítica',ref:1}]},'rendimiento-tecnico':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Rendimiento por técnico',desc:'Seguimiento del desempeño individual de cada técnico en producción, calidad y costos asociados.',actors:['Supervisor de zona','Gerencia operacional','RR.HH.'],inputs:['Actividades cerradas','Costo de flota asociado','Multas generadas'],outputs:['Ranking de rendimiento','Alertas de bajo desempeño','Datos para decisiones RRHH'],opps:[{text:'Cruce automático GPS + actividad + costo flota para perfil 360° de cada técnico',tag:'IA correlación',ref:4},{text:'Dashboard de ranking actualizado diariamente sin intervención manual',tag:'Automatización',ref:4}]},'recepcion-retiro':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Recepción de listado de retiros',desc:'Ingreso del listado de equipos a retirar o entregar desde los sistemas de cada mandante.',actors:['Coordinador logístico','Sistema mandante (SAP)','Bodeguero central'],inputs:['Listado de retiros del mandante','Series a recuperar','Direcciones de clientes'],outputs:['Órdenes de retiro creadas','Técnicos asignados por zona','Confirmación al mandante'],opps:[{text:'Integración directa SAP → sistema propio para eliminar carga manual',tag:'Integración',ref:6}]},'ejecucion-retiro':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Ejecución y trazabilidad',desc:'El técnico ejecuta el retiro o entrega y registra la serie del equipo en tiempo real.',actors:['Técnico de campo','Cliente final','Bodeguero receptor'],inputs:['Orden de retiro','Equipo con número de serie','Instrucciones del mandante'],outputs:['Serie registrada','Equipo en tránsito a bodega','Confirmación de retiro'],opps:[{text:'Registro de series por QR/código de barras desde móvil',tag:'Quick win',ref:6},{text:'Trazabilidad en tiempo real: registrada → en tránsito → recibida en bodega',tag:'Trazabilidad',ref:6}]},'control-series':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Control de series y stock',desc:'Reconciliación entre lo declarado por el mandante, lo retirado en terreno y lo recibido en bodega.',actors:['Bodeguero central','Coordinador logístico','Sistema mandante (SAP)'],inputs:['Listado de series del mandante','Series registradas en terreno','Recepción física en bodega'],outputs:['Informe de discrepancias','Stock actualizado','Reclamos al mandante si aplica'],opps:[{text:'Detección automática de discrepancias SAP vs bodega con alerta a coordinador',tag:'Automatización crítica',ref:6},{text:'Alerta por serie sin movimiento por más de 60 días',tag:'IA anomalía',ref:6}]},'optimizacion-rutas':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Optimización de rutas',desc:'Agrupación y secuenciación de órdenes para maximizar visitas por técnico por día.',actors:['Coordinador logístico','Técnico de campo','Sistema GPS'],inputs:['Listado de órdenes del día','Posición inicial de cada técnico','Estimación de duración por visita'],outputs:['Ruta óptima por técnico','Estimación de horarios','Cantidad de visitas proyectadas'],opps:[{text:'Modelo predictivo que aprende de datos históricos para asignar rutas óptimas',tag:'IA predictiva',ref:5}]},'gestion-hitos':{unit:'Torres',unitColor:'#F59E0B',unitBg:'#FFFBEB',title:'Gestión de hitos',desc:'Control del avance de construcción de sitios telco por hitos contractuales con el mandante.',actors:['Jefe de brigada','Gerente de proyecto','Mandante telco'],inputs:['Contrato con hitos definidos','Avance físico reportado','Validación del mandante'],outputs:['Hito aprobado y facturado','Informe de avance','Alertas de retraso'],opps:[{text:'Dashboard de avance por sitio y brigada — reemplaza control manual en Excel',tag:'Quick win',ref:3}]},'fondos-rendir':{unit:'Torres',unitColor:'#F59E0B',unitBg:'#FFFBEB',title:'Fondos por rendir',desc:'Gestión del flujo de caja entregado a brigadas para gastos en terreno — $3MM semanales sin trazabilidad.',actors:['Jefe de brigada','Administración central','Contador externo'],inputs:['Fondos transferidos a brigada','Boletas y facturas de gastos','Solicitudes de reposición'],outputs:['Rendición aprobada','Saldo actualizado por brigada','Informe de gastos'],opps:[{text:'Sistema de crédito rodante: foto de boleta → OCR → aprobación automática o escalada',tag:'💰 Control $3MM/sem',ref:3},{text:'Saldo disponible en tiempo real por brigada y proyecto',tag:'Automatización',ref:3}]},'finanzas':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'Finanzas y contabilidad',desc:'Gestión contable de dos empresas legales (NDX y NOW) con contador externo y sistemas separados.',actors:['Contador externo','Gerencia general','Administración'],inputs:['Movimientos Nubox NDX','Movimientos Nubox NOW','Fondos por rendir rendidos'],outputs:['Estados financieros','Declaraciones tributarias','Ratios de gestión'],opps:[{text:'Dashboard financiero en tiempo real: ratios gasto/técnico, gasto/flota vs presupuesto',tag:'💰 Visibilidad crítica',ref:2},{text:'Integración Nubox → sistema propio para eliminar rezago contable',tag:'Integración',ref:2}]},'rrhh':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'RRHH y técnicos',desc:'Gestión de contratos, horarios y certificaciones de 130+ técnicos distribuidos a nivel nacional.',actors:['Encargada de RRHH','Supervisores de zona','Técnicos'],inputs:['Contratos de trabajo','Turnos y horarios (Redmax)','Certificaciones y cursos'],outputs:['Pago de remuneraciones','Registro de asistencia','Control de habilitaciones'],opps:[{text:'HUB central de técnicos: historial, certificaciones y alertas de vencimiento automáticas',tag:'Plataforma',ref:8},{text:'Vinculación historial técnico ↔ rendimiento operacional',tag:'Analytics',ref:4}]},'logistica-flota':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'Logística y flota',desc:'Gestión de 5 bodegas (4 norte + Santiago), vehículos, combustible y seguros de la flota propia.',actors:['Encargada de flota (Camila)','Bodegueros','Supervisores de zona'],inputs:['Posición GPS en tiempo real','Consumo de combustible','Estado de mantenciones'],outputs:['Asignación de vehículos','Alertas de mantención','Costos de operación por vehículo'],opps:[{text:'KPI de costo por vehículo cruzado con técnico asignado',tag:'Analytics',ref:4},{text:'Alertas automáticas de mantención predictiva por kilometraje o tiempo',tag:'Automatización',ref:4}]}};
+
+const OPPS=[{id:1,name:'Sistema propio de alertas DPN',unit:'Última milla',unitColor:'#00C46A',impact:'Alto',diff:'Baja',time:'6–8 sem',color:'#EF4444'},{id:2,name:'Dashboard financiero en tiempo real',unit:'Transversal',unitColor:'#8B5CF6',impact:'Alto',diff:'Baja',time:'8–10 sem',color:'#F59E0B'},{id:3,name:'Gestión inteligente de fondos por rendir',unit:'Torres',unitColor:'#F59E0B',impact:'Alto',diff:'Baja',time:'4–6 sem',color:'#00C46A'},{id:4,name:'Módulo de rendimiento por persona y flota',unit:'Todas',unitColor:'#64748B',impact:'Alto',diff:'Media',time:'10–12 sem',color:'#64748B'},{id:5,name:'Optimización inteligente de rutas',unit:'Retiro · Última milla',unitColor:'#3B82F6',impact:'Alto',diff:'Alta',time:'16–20 sem',color:'#8B5CF6'},{id:6,name:'Control de stock y trazabilidad de series',unit:'Retiro · Remoz.',unitColor:'#3B82F6',impact:'Alto',diff:'Media',time:'8–10 sem',color:'#3B82F6'},{id:7,name:'Monitoreo con detección de irregularidades',unit:'Última milla',unitColor:'#00C46A',impact:'Medio',diff:'Alta',time:'14–18 sem',color:'#EF4444'},{id:8,name:'Plataforma centralizada de técnicos',unit:'Transversal',unitColor:'#8B5CF6',impact:'Medio',diff:'Baja',time:'6–8 sem',color:'#8B5CF6'}];
+
+const OPP_DETAIL={1:{desc:'Hoy NOW paga $800.000 mensuales a un tercero por un sistema deficiente. Cada alerta no gestionada genera multas de $4–5MM semanales. Una solución propia elimina ese costo y reduce las multas.',resolves:['Elimina pago mensual de $800K a tercero','Captura alertas DPN en tiempo real desde APIs mandantes','Dispara acción automática antes del vencimiento del SLA','Registra historial de gestión por alerta y técnico'],how:'Módulo propio integrado con APIs de Claro y WOM. Calcula tiempo disponible antes del SLA, asigna automáticamente al técnico más cercano y escala al supervisor si no hay respuesta.',tech:['React','Firebase','API Claro/WOM','Alertas push','Dashboard tiempo real']},2:{desc:'La empresa mira los estados financieros del año pasado recién hoy. Los ratios de gasto son completamente desconocidos, impidiendo decisiones de gestión con datos reales.',resolves:['Visibilidad financiera en tiempo real','Ratios gasto/técnico y gasto/flota automáticos','Alertas cuando un ratio supera el presupuesto','Elimina rezago contable de meses'],how:'Conectamos Nubox (×2), Odoo y sistema de flota en un dashboard centralizado. Proceso nocturno sincroniza movimientos y genera KPIs diarios.',tech:['React','Firebase','Integración Nubox','Integración Odoo','Automatización nocturna']},3:{desc:'Brigadas de Torres manejan $3MM semanales en fondos por rendir sin trazabilidad. El proceso es manual y genera discrepancias contables frecuentes.',resolves:['Control de $3MM/sem en fondos de Torres','Ciclo de rendición cerrado y trazable','Saldo disponible en tiempo real por brigada','Eliminación de discrepancias contables'],how:'Sistema de crédito rodante: jefe de brigada fotografía la boleta, OCR extrae datos, el sistema aprueba automáticamente o escala para revisión.',tech:['React','Firebase','OCR de boletas','Notificaciones móvil','Panel de aprobación']},4:{desc:'Con 130+ técnicos y múltiples vehículos no existe ningún KPI individual. Es imposible saber quién produce más o qué camioneta genera más costo.',resolves:['KPIs individuales: actividades, tiempo promedio, multas generadas','Costo por vehículo vs técnico asignado','Ranking automático actualizado diariamente','Alertas de correlaciones negativas'],how:'Cruzamos datos de actividad del mandante, GPS y costos de mantención para perfil 360° por técnico. Motor de cálculo nocturno produce rankings y detecta correlaciones.',tech:['React','Firebase','Integración GPS','Analytics','Motor de correlación']},5:{desc:'Las rutas se asignan manualmente. Con 130 técnicos nacionales y miles de órdenes mensuales hay enorme potencial de optimización.',resolves:['Agrupación geográfica automática de órdenes','Estimación de tiempo por tipo de actividad','Propuesta de ruta óptima al inicio de jornada','El supervisor puede ajustar antes de confirmar'],how:'Modelo que ingiere órdenes del día, clusteriza por proximidad y estima tiempos según historial. En fase 2, el modelo aprende y mejora predicciones.',tech:['Python','Algoritmo de rutas','React','Firebase','Modelo ML']},6:{desc:'El control de series es 100% manual. Los reingresos se cuentan como nuevos equipos y el remozamiento opera sin visibilidad de repuestos.',resolves:['Registro de cada movimiento de una serie','Detección de discrepancias vs SAP mandante','Alertas de series sin movimiento por más de 60 días','Control de stock de repuestos en remozamiento'],how:'Módulo de trazabilidad que registra cada movimiento. Detecta anomalías automáticamente y las escala. Para remozamiento, agrega control de repuestos.',tech:['React','Firebase','Integración SAP','Alertas automáticas','Control de stock']},7:{desc:'Sin monitoreo inteligente un técnico puede estar inactivo 3 horas sin que nadie lo note. El GPS está desconectado del sistema de actividad del mandante.',resolves:['Detección de inactividad prolongada con alerta supervisor','Cruce GPS vs actividad reportada en tiempo real','Categorización automática: leve, moderada, crítica','Contexto completo al supervisor para actuar'],how:'Integración GPS con sistema de actividad del mandante. Motor de reglas detecta anomalías y las categoriza. En fase 2, IA aprende patrones y reduce falsos positivos.',tech:['React','Firebase','Integración GPS','Motor de reglas','IA detección']},8:{desc:'El historial de 130+ técnicos está disperso entre Redmax, Excel y correo. Las certificaciones vencen sin alerta automática.',resolves:['Perfil centralizado: historial, contratos, certificaciones','Alertas de vencimiento a 15 y 5 días','Vinculación con módulo de rendimiento para perfil 360°','Acceso del técnico a su perfil desde móvil'],how:'HUB digital del técnico accesible desde cualquier dispositivo. Alertas automáticas de vencimiento. El técnico puede ver y descargar sus documentos.',tech:['React','Firebase','Notificaciones push','Mobile-first','Integración Redmax']}};
+
+var activeUnit=null;
+var UNIT_MAP={'ultima-milla':['recepcion-ordenes','ejecucion-terreno','control-alertas','rendimiento-tecnico'],'retiro':['recepcion-retiro','ejecucion-retiro','control-series','optimizacion-rutas'],'torres':['gestion-hitos','fondos-rendir'],'transversal':['finanzas','rrhh','logistica-flota']};
+
+function switchView(vid,btn){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.getElementById('view-'+vid).classList.add('active');if(btn)btn.classList.add('active');var t={'mapa':'Mapa del negocio','oportunidades':'Oportunidades de mejora'};document.getElementById('topbar-title').textContent=t[vid]||vid;if(vid!=='mapa')closePanel();if(vid==='mapa'){resetUnitHighlight();activeUnit=null;}}
+
+function openPanel(k){var p=PROCESSES[k];if(!p)return;var tag=document.getElementById('panel-unit-tag');tag.textContent=p.unit;tag.style.background=p.unitBg;tag.style.color=p.unitColor;tag.style.border='1px solid '+p.unitColor+'55';document.getElementById('panel-title').textContent=p.title;document.getElementById('panel-desc').textContent=p.desc;var h='<div class="panel-section"><div class="panel-section-title">Actores</div><div class="actor-list">'+p.actors.map(function(a){return '<span class="actor-chip">'+a+'</span>';}).join('')+'</div></div>';h+='<div class="panel-section"><div class="panel-section-title">Flujo de información</div><div class="io-row"><div class="io-box"><div class="io-box-label in">↓ Inputs</div>'+p.inputs.map(function(i){return '<div class="io-item"><span class="io-dot in"></span>'+i+'</div>';}).join('')+'</div><div class="io-box"><div class="io-box-label out">↑ Outputs</div>'+p.outputs.map(function(o){return '<div class="io-item"><span class="io-dot out"></span>'+o+'</div>';}).join('')+'</div></div></div>';h+='<div class="panel-section"><div class="panel-section-title">Oportunidades de mejora</div>'+p.opps.map(function(op){return '<div class="opp-chip" onclick="scrollToOpp('+op.ref+')"><span class="opp-chip-icon">⚡</span><div><div class="opp-chip-text">'+op.text+'</div><span class="opp-chip-tag">'+op.tag+'</span></div></div>';}).join('')+'</div>';document.getElementById('panel-body').innerHTML=h;document.getElementById('detail-panel').classList.add('open');}
+function closePanel(){document.getElementById('detail-panel').classList.remove('open');}
+
+function filterUnit(uk,btn){switchView('mapa',null);document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.querySelectorAll('.nav-item')[0].classList.add('active');if(btn)btn.classList.add('active');resetUnitHighlight();if(activeUnit===uk){activeUnit=null;return;}activeUnit=uk;var svg=document.getElementById('diagram-svg');svg.querySelectorAll('rect[rx="16"]').forEach(function(r){r.style.opacity='0.15';});svg.querySelectorAll('g.node-process').forEach(function(g){g.style.opacity='0.1';});var ui={'ultima-milla':0,'retiro':1,'torres':2,'transversal':3};var all=svg.querySelectorAll('rect[rx="16"]');if(all[ui[uk]]){all[ui[uk]].style.opacity='1';all[ui[uk]].style.strokeWidth='2.5';}var procs=UNIT_MAP[uk]||[];svg.querySelectorAll('g.node-process').forEach(function(g){var oc=g.getAttribute('onclick')||'';procs.forEach(function(pid){if(oc.indexOf(pid)!==-1)g.style.opacity='1';});});var sm={'ultima-milla':0,'retiro':0,'torres':280,'transversal':280};document.getElementById('map-canvas').scrollTop=sm[uk]||0;}
+function resetUnitHighlight(){var svg=document.getElementById('diagram-svg');if(!svg)return;svg.querySelectorAll('rect[rx="16"]').forEach(function(r){r.style.opacity='1';r.style.strokeWidth='';});svg.querySelectorAll('g.node-process').forEach(function(g){g.style.opacity='1';g.style.transform='';}); }
+
+function renderMatrix(){['quad-alto-alta','quad-alto-baja','quad-medio-alta','quad-medio-baja'].forEach(function(id){var el=document.getElementById(id);if(!el)return;var lbl=el.querySelector('.matrix-cell-label');el.innerHTML='';el.appendChild(lbl);});OPPS.forEach(function(o){var qid='quad-'+o.impact.toLowerCase()+'-'+o.diff.toLowerCase();var q=document.getElementById(qid);if(!q)return;var c=document.createElement('div');c.className='matrix-chip';c.draggable=true;var sn=o.name.length>22?o.name.substring(0,22)+'…':o.name;c.innerHTML='<span class="matrix-chip-num" style="background:'+o.color+'">'+o.id+'</span>'+sn;c.addEventListener('click',(function(oid){return function(e){e.stopPropagation();openModal(oid,'view');}})(o.id));c.addEventListener('dragstart',(function(oid){return function(e){onChipDragStart(e,oid);}})(o.id));c.addEventListener('dragend',onChipDragEnd);q.appendChild(c);});}
+
+function renderOppList(){var c=document.getElementById('opp-list-rows');if(!c)return;c.innerHTML=OPPS.map(function(o){var ic=o.impact==='Alto'?'high-impact':o.impact==='Medio'?'med-impact':'low-impact';var dc=o.diff==='Alta'?'high-diff':o.diff==='Media'?'med-diff':'low-diff';return '<div class="opp-list-row" id="opp-row-'+o.id+'" onclick="openModal('+o.id+',\'view\')">'+'<div><span class="opp-num" style="background:'+o.color+'">'+o.id+'</span></div>'+'<div class="opp-name">'+o.name+'</div>'+'<div><span class="pill" style="background:'+o.unitColor+'18;color:'+o.unitColor+';border:1px solid '+o.unitColor+'44;font-size:11px;padding:3px 8px;border-radius:20px;">'+o.unit+'</span></div>'+'<div><span class="pill '+ic+'">'+o.impact+'</span></div>'+'<div><span class="pill '+dc+'">'+o.diff+'</span></div>'+'<div class="time-badge">⏱ '+o.time+'</div>'+'<div class="row-actions" onclick="event.stopPropagation()">'+'<button class="row-btn" onclick="openModal('+o.id+',\'edit\')">Editar</button>'+'<button class="row-btn del" onclick="deleteOpp('+o.id+')">✕</button>'+'</div></div>';}).join('');}
+
+function renderAll(){renderMatrix();renderOppList();}
+
+var dragId=null,pendingDrag=null;
+function onChipDragStart(e,id){dragId=id;e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',String(id));}
+function onChipDragEnd(){dragId=null;}
+function onQuadOver(e,el){e.preventDefault();e.dataTransfer.dropEffect='move';el.classList.add('drag-over');}
+function onQuadLeave(el){el.classList.remove('drag-over');}
+function onQuadDrop(e,el){e.preventDefault();el.classList.remove('drag-over');var id=parseInt(e.dataTransfer.getData('text/plain'));var opp=OPPS.find(function(o){return o.id===id;});if(!opp)return;var ni=el.dataset.impact,nd=el.dataset.diff;if(opp.impact===ni&&opp.diff===nd)return;pendingDrag={id:id,newImpact:ni,newDiff:nd};var dc=document.getElementById('drag-confirm');document.getElementById('dc-title').textContent='Mover: '+opp.name.substring(0,28)+(opp.name.length>28?'…':'');document.getElementById('dc-desc').textContent='De: '+opp.impact+' impacto · '+opp.diff+' dificultad  →  A: '+ni+' impacto · '+nd+' dificultad';var rect=el.getBoundingClientRect();dc.style.left=Math.min(rect.left+10,window.innerWidth-300)+'px';dc.style.top=Math.max(rect.top+10,10)+'px';dc.classList.add('visible');}
+function confirmDrag(){if(!pendingDrag)return;var opp=OPPS.find(function(o){return o.id===pendingDrag.id;});if(opp){opp.impact=pendingDrag.newImpact;opp.diff=pendingDrag.newDiff;}pendingDrag=null;document.getElementById('drag-confirm').classList.remove('visible');renderAll();}
+function cancelDrag(){pendingDrag=null;document.getElementById('drag-confirm').classList.remove('visible');}
+
+var modalMode='view',modalOppId=null;
+function openModal(id,mode){modalOppId=id;modalMode=mode;document.getElementById('modal-overlay').classList.add('visible');if(mode==='new'){renderModalNew();return;}var opp=OPPS.find(function(o){return o.id===id;});if(!opp)return;if(mode==='view')renderModalView(opp);else renderModalEdit(opp);}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('visible');modalOppId=null;modalMode='view';}
+function closeModalOverlay(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+function pc(v,t){if(t==='i')return v==='Alto'?'high-impact':v==='Medio'?'med-impact':'low-impact';return v==='Alta'?'high-diff':v==='Media'?'med-diff':'low-diff';}
+
+function renderModalView(opp){var det=OPP_DETAIL[opp.id]||{desc:'Sin descripción.',resolves:[],how:'',tech:[]};document.getElementById('modal-num').textContent=opp.id;document.getElementById('modal-num').style.background=opp.color;document.getElementById('modal-title').textContent=opp.name;document.getElementById('modal-unit').textContent=opp.unit;document.getElementById('modal-body').innerHTML='<div class="modal-indicators"><div class="modal-ind"><div class="modal-ind-label">Impacto</div><span class="pill '+pc(opp.impact,'i')+'">'+opp.impact+'</span></div><div class="modal-ind"><div class="modal-ind-label">Dificultad</div><span class="pill '+pc(opp.diff,'d')+'">'+opp.diff+'</span></div><div class="modal-ind"><div class="modal-ind-label">Tiempo estimado</div><span style="font-size:15px;font-weight:700;color:var(--text)">⏱ '+opp.time+'</span></div></div><div class="modal-section"><div class="modal-section-title">Contexto y problema</div><div class="modal-desc">'+det.desc+'</div></div><div class="modal-section"><div class="modal-section-title">Qué resuelve</div><ul class="modal-bullets">'+det.resolves.map(function(r){return '<li><span class="bullet-dot"></span>'+r+'</li>';}).join('')+'</ul></div><div class="modal-section"><div class="modal-section-title">Cómo lo haríamos</div><div class="modal-desc">'+det.how+'</div></div><div class="modal-section"><div class="modal-section-title">Tecnologías</div><div class="tech-tags">'+det.tech.map(function(t){return '<span class="tech-tag">'+t+'</span>';}).join('')+'</div></div>';document.getElementById('modal-footer').innerHTML='<button class="btn-delete" onclick="deleteOpp('+opp.id+');closeModal()">Eliminar</button><button class="btn-edit" onclick="openModal('+opp.id+',\'edit\')">✏ Editar</button>';}
+
+function renderModalEdit(opp){var det=OPP_DETAIL[opp.id]||{desc:'',resolves:[],how:'',tech:[]};document.getElementById('modal-num').textContent=opp.id;document.getElementById('modal-num').style.background=opp.color;document.getElementById('modal-title').innerHTML='<input class="edit-field" id="edit-name" value="'+opp.name.replace(/"/g,'&quot;')+'" style="font-size:17px;font-weight:800;padding:6px 10px;margin-top:2px;">';document.getElementById('modal-unit').innerHTML='<input class="edit-field" id="edit-unit" value="'+opp.unit.replace(/"/g,'&quot;')+'" style="font-size:12px;padding:4px 8px;margin-top:4px;width:200px;">';document.getElementById('modal-body').innerHTML='<div class="modal-indicators"><div class="modal-ind"><div class="modal-ind-label">Impacto</div><select class="edit-select" id="edit-impact"><option'+(opp.impact==='Alto'?' selected':'')+'>Alto</option><option'+(opp.impact==='Medio'?' selected':'')+'>Medio</option><option'+(opp.impact==='Bajo'?' selected':'')+'>Bajo</option></select></div><div class="modal-ind"><div class="modal-ind-label">Dificultad</div><select class="edit-select" id="edit-diff"><option'+(opp.diff==='Alta'?' selected':'')+'>Alta</option><option'+(opp.diff==='Media'?' selected':'')+'>Media</option><option'+(opp.diff==='Baja'?' selected':'')+'>Baja</option></select></div><div class="modal-ind"><div class="modal-ind-label">Tiempo</div><input class="edit-field" id="edit-time" value="'+opp.time+'" style="font-size:13px;padding:5px 8px;width:110px;"></div></div><div class="modal-section"><div class="modal-section-title">Contexto y problema</div><textarea class="edit-field" id="edit-desc" rows="3">'+det.desc+'</textarea></div><div class="modal-section"><div class="modal-section-title">Qué resuelve</div><div class="edit-bullets-wrap" id="edit-resolves">'+det.resolves.map(function(r){return '<div class="edit-bullet-row"><input class="edit-field edit-bullet-input" value="'+r.replace(/"/g,'&quot;')+'"><button class="btn-remove-bullet" onclick="removeBullet(this)">✕</button></div>';}).join('')+'</div><button class="btn-add-bullet" onclick="addBullet(\'edit-resolves\')">+ Agregar punto</button></div><div class="modal-section"><div class="modal-section-title">Cómo lo haríamos</div><textarea class="edit-field" id="edit-how" rows="3">'+det.how+'</textarea></div><div class="modal-section"><div class="modal-section-title">Tecnologías (separadas por coma)</div><input class="edit-field" id="edit-tech" value="'+det.tech.join(', ')+'"></div>';document.getElementById('modal-footer').innerHTML='<button class="btn-delete" onclick="deleteOpp('+opp.id+');closeModal()">Eliminar</button><button class="btn-edit" onclick="openModal('+opp.id+',\'view\')">Cancelar</button><button class="btn-edit save" onclick="saveEdit('+opp.id+')">Guardar cambios</button>';}
+
+function renderModalNew(){document.getElementById('modal-num').textContent='+';document.getElementById('modal-num').style.background='#64748B';document.getElementById('modal-title').innerHTML='<input class="edit-field" id="edit-name" placeholder="Nombre de la oportunidad" style="font-size:17px;font-weight:800;padding:6px 10px;margin-top:2px;">';document.getElementById('modal-unit').innerHTML='<input class="edit-field" id="edit-unit" placeholder="Unidad" style="font-size:12px;padding:4px 8px;margin-top:4px;width:200px;">';document.getElementById('modal-body').innerHTML='<div class="modal-indicators"><div class="modal-ind"><div class="modal-ind-label">Impacto</div><select class="edit-select" id="edit-impact"><option>Alto</option><option>Medio</option><option>Bajo</option></select></div><div class="modal-ind"><div class="modal-ind-label">Dificultad</div><select class="edit-select" id="edit-diff"><option>Alta</option><option>Media</option><option>Baja</option></select></div><div class="modal-ind"><div class="modal-ind-label">Tiempo</div><input class="edit-field" id="edit-time" placeholder="ej: 4–6 sem" style="font-size:13px;padding:5px 8px;width:110px;"></div></div><div class="modal-section"><div class="modal-section-title">Contexto y problema</div><textarea class="edit-field" id="edit-desc" rows="3" placeholder="Describe el problema..."></textarea></div><div class="modal-section"><div class="modal-section-title">Qué resuelve</div><div class="edit-bullets-wrap" id="edit-resolves"></div><button class="btn-add-bullet" onclick="addBullet(\'edit-resolves\')">+ Agregar punto</button></div><div class="modal-section"><div class="modal-section-title">Cómo lo haríamos</div><textarea class="edit-field" id="edit-how" rows="3" placeholder="Descripción de la solución..."></textarea></div><div class="modal-section"><div class="modal-section-title">Tecnologías (separadas por coma)</div><input class="edit-field" id="edit-tech" placeholder="React, Firebase, etc."></div>';document.getElementById('modal-footer').innerHTML='<button class="btn-edit" onclick="closeModal()">Cancelar</button><button class="btn-edit save" onclick="saveNew()">Crear oportunidad</button>';}
+
+function addBullet(cid){var w=document.getElementById(cid);var row=document.createElement('div');row.className='edit-bullet-row';row.innerHTML='<input class="edit-field edit-bullet-input" placeholder="Nuevo punto..."><button class="btn-remove-bullet" onclick="removeBullet(this)">✕</button>';w.appendChild(row);}
+function removeBullet(btn){btn.parentElement.remove();}
+function getResolves(){return Array.from(document.querySelectorAll('#edit-resolves .edit-bullet-input')).map(function(i){return i.value;}).filter(function(v){return v.trim();});}
+function saveEdit(id){var opp=OPPS.find(function(o){return o.id===id;});if(!opp)return;opp.name=document.getElementById('edit-name').value;opp.unit=document.getElementById('edit-unit').value;opp.impact=document.getElementById('edit-impact').value;opp.diff=document.getElementById('edit-diff').value;opp.time=document.getElementById('edit-time').value;OPP_DETAIL[id]={desc:document.getElementById('edit-desc').value,resolves:getResolves(),how:document.getElementById('edit-how').value,tech:document.getElementById('edit-tech').value.split(',').map(function(t){return t.trim();}).filter(Boolean)};renderAll();openModal(id,'view');}
+function saveNew(){var name=document.getElementById('edit-name').value.trim();if(!name){document.getElementById('edit-name').focus();return;}var newId=Math.max.apply(null,OPPS.map(function(o){return o.id;}))+1;OPPS.push({id:newId,name:name,unit:document.getElementById('edit-unit').value||'General',unitColor:'#64748B',impact:document.getElementById('edit-impact').value,diff:document.getElementById('edit-diff').value,time:document.getElementById('edit-time').value||'Por definir',color:'#64748B'});OPP_DETAIL[newId]={desc:document.getElementById('edit-desc').value,resolves:getResolves(),how:document.getElementById('edit-how').value,tech:document.getElementById('edit-tech').value.split(',').map(function(t){return t.trim();}).filter(Boolean)};renderAll();closeModal();}
+function deleteOpp(id){if(!confirm('¿Eliminar esta oportunidad?'))return;var idx=OPPS.findIndex(function(o){return o.id===id;});if(idx!==-1)OPPS.splice(idx,1);renderAll();}
+function scrollToOpp(id){switchView('oportunidades',document.querySelectorAll('.nav-item')[1]);setTimeout(function(){var el=document.getElementById('opp-row-'+id);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.background='#F0FDF4';setTimeout(function(){el.style.background='';},1500);}},120);}
+
+renderAll();
+
+</script>
+</body>
+</html>
