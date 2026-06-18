@@ -1807,24 +1807,54 @@ function applyProfilePermissions() {
   });
 }
 
+var ADMIN_EMAILS = ['boss@npr.cl'];
+
 function loadUserProfile(email) {
-  if(!window._db || !email) return;
+  if(!email) return;
+  currentUserEmail = email;
+
+  // Hardcoded admins siempre tienen acceso completo
+  if(ADMIN_EMAILS.indexOf(email) !== -1) {
+    currentUserProfile = 'admin';
+    applyProfilePermissions();
+    // También guardar/actualizar en Firestore si está disponible
+    if(window._db) {
+      var safeId = email.replace(/[.@]/g,'_');
+      window._db.collection('users').doc(safeId).set({
+        email:email, nombre:'Julio Espinoza', perfil:'admin',
+        updatedAt: new Date().toISOString()
+      }, {merge:true}).catch(function(e){ console.warn('save admin error:', e); });
+    }
+    return;
+  }
+
+  if(!window._db) {
+    currentUserProfile = 'comercial';
+    applyProfilePermissions();
+    return;
+  }
+
   window._db.collection('users').where('email','==',email).get()
     .then(function(snap){
       if(!snap.empty) {
         var data = snap.docs[0].data();
         currentUserProfile = data.perfil || 'comercial';
       } else {
-        currentUserProfile = 'admin';
+        // Usuario nuevo sin perfil — darle comercial por defecto
+        currentUserProfile = 'comercial';
         var safeId = email.replace(/[.@]/g,'_');
         window._db.collection('users').doc(safeId).set({
-          email:email, nombre:email.split('@')[0], perfil:'admin',
+          email:email, nombre:email.split('@')[0], perfil:'comercial',
           createdAt: new Date().toISOString()
         });
       }
       applyProfilePermissions();
     })
-    .catch(function(e){ console.warn('loadUserProfile error:', e); });
+    .catch(function(e){
+      console.warn('loadUserProfile error:', e);
+      currentUserProfile = 'comercial';
+      applyProfilePermissions();
+    });
 }
 
 function renderUsersList() {
