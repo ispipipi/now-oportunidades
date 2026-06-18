@@ -1780,13 +1780,11 @@ function loadFromFirestore() {
 
 
 // ═══════════════════════════════════════════
-// USUARIOS
+// USUARIOS — Fase 1
 // ═══════════════════════════════════════════
-var currentUserProfile = null;
+var currentUserProfile = 'comercial';
 var currentUserEmail   = null;
-var ADMIN_EMAIL = null; // se setea al cargar
 
-// Permisos por perfil
 var PERMS = {
   admin:     { editOpps:true,  moveMatrix:true,  addNotes:true,  checkNotes:true,  manageUsers:true  },
   now:       { editOpps:false, moveMatrix:true,  addNotes:true,  checkNotes:false, manageUsers:false },
@@ -1794,201 +1792,174 @@ var PERMS = {
 };
 
 function canDo(perm) {
-  var p = currentUserProfile || 'comercial';
-  return !!(PERMS[p] && PERMS[p][perm]);
+  return !!(PERMS[currentUserProfile] && PERMS[currentUserProfile][perm]);
 }
 
 function applyProfilePermissions() {
-  var p = currentUserProfile || 'comercial';
-
-  // Menú usuarios — solo admin
   var sbAdmin = document.getElementById('sb-label-admin');
   var sbUsers = document.getElementById('sb-item-usuarios');
   if(sbAdmin) sbAdmin.style.display = canDo('manageUsers') ? '' : 'none';
   if(sbUsers) sbUsers.style.display = canDo('manageUsers') ? '' : 'none';
 
   // Botón nueva oportunidad
-  var btnAdd = document.querySelector('.btn-add');
-  if(btnAdd) btnAdd.style.display = canDo('editOpps') ? '' : 'none';
-
-  // Botones editar/eliminar en lista de opps — se aplica al renderizar
-  // Drag en matriz — se aplica al renderizar
+  document.querySelectorAll('.btn-add').forEach(function(b){
+    b.style.display = canDo('editOpps') ? '' : 'none';
+  });
 }
 
-// Cargar perfil del usuario desde Firestore
 function loadUserProfile(email) {
-  if(!window._db) return;
-  window._db.collection('users').where('email','==',email).get().then(function(snap){
-    if(!snap.empty) {
-      var data = snap.docs[0].data();
-      currentUserProfile = data.perfil || 'comercial';
-      currentUserEmail   = email;
-    } else {
-      // Si no existe en Firestore, es el primer admin (el que creó la cuenta en Firebase Auth)
-      currentUserProfile = 'admin';
-      currentUserEmail   = email;
-      // Guardarlo como admin
-      window._db.collection('users').doc(email.replace(/[.@]/g,'_')).set({
-        email: email, nombre: email.split('@')[0], perfil: 'admin', createdAt: new Date().toISOString()
-      });
-    }
-    applyProfilePermissions();
-    renderUsersKpis();
-  }).catch(function(e){ console.warn('loadUserProfile error:', e); });
+  if(!window._db || !email) return;
+  window._db.collection('users').where('email','==',email).get()
+    .then(function(snap){
+      if(!snap.empty) {
+        var data = snap.docs[0].data();
+        currentUserProfile = data.perfil || 'comercial';
+      } else {
+        currentUserProfile = 'admin';
+        var safeId = email.replace(/[.@]/g,'_');
+        window._db.collection('users').doc(safeId).set({
+          email:email, nombre:email.split('@')[0], perfil:'admin',
+          createdAt: new Date().toISOString()
+        });
+      }
+      applyProfilePermissions();
+    })
+    .catch(function(e){ console.warn('loadUserProfile error:', e); });
 }
 
-// Renderizar lista de usuarios
 function renderUsersList() {
   if(!window._db) return;
-  window._db.collection('users').get().then(function(snap){
-    var rows = '';
-    var total=0, nowCount=0, comercialCount=0, adminCount=0;
-    snap.forEach(function(doc){
-      var u = doc.data();
-      total++;
-      if(u.perfil==='now') nowCount++;
-      else if(u.perfil==='comercial') comercialCount++;
-      else if(u.perfil==='admin') adminCount++;
-
-      var perfilLabel = u.perfil==='admin'?'Admin':u.perfil==='now'?'NOW':'Comercial';
-      rows += '<div class="user-row">' +
-        '<div><div class="user-name">' + (u.nombre||'—') + '</div><div class="user-email">' + u.email + '</div></div>' +
-        '<div style="font-size:12px;color:var(--text-muted)">' + u.email + '</div>' +
-        '<div><span class="perfil-badge ' + u.perfil + '">' + perfilLabel + '</span></div>' +
-        '<div class="row-actions">' +
-          '<button class="row-btn" onclick="openUserModal('' + doc.id + '')">Editar</button>' +
-          '<button class="row-btn del" onclick="deleteUser('' + doc.id + '','' + u.email + '')">✕</button>' +
-        '</div>' +
-      '</div>';
-    });
-    var el = document.getElementById('users-list-rows');
-    if(el) el.innerHTML = rows || '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">No hay usuarios registrados.</div>';
-
-    // KPIs
-    var t=document.getElementById('u-count-total'); if(t) t.textContent=total;
-    var n=document.getElementById('u-count-now'); if(n) n.textContent=nowCount;
-    var co=document.getElementById('u-count-comercial'); if(co) co.textContent=comercialCount;
-    var a=document.getElementById('u-count-admin'); if(a) a.textContent=adminCount;
-  }).catch(function(e){ console.warn('renderUsersList error:', e); });
+  window._db.collection('users').get()
+    .then(function(snap){
+      var rows = '';
+      var total=0, nowCount=0, comercialCount=0, adminCount=0;
+      snap.forEach(function(doc){
+        var u = doc.data();
+        total++;
+        if(u.perfil==='now') nowCount++;
+        else if(u.perfil==='comercial') comercialCount++;
+        else adminCount++;
+        var perfilLabel = u.perfil==='admin'?'Admin':u.perfil==='now'?'NOW':'Comercial';
+        rows += '<div class="user-row">' +
+          '<div><div class="user-name">'+(u.nombre||'—')+'</div><div class="user-email">'+u.email+'</div></div>' +
+          '<div style="font-size:12px;color:var(--text-muted)">'+u.email+'</div>' +
+          '<div><span class="perfil-badge '+u.perfil+'">'+perfilLabel+'</span></div>' +
+          '<div class="row-actions">' +
+            '<button class="row-btn" onclick="openUserModal(''+doc.id+'')">Editar</button>' +
+            '<button class="row-btn del" onclick="deleteUser(''+doc.id+'',''+u.email+'')">✕</button>' +
+          '</div></div>';
+      });
+      var el = document.getElementById('users-list-rows');
+      if(el) el.innerHTML = rows || '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">No hay usuarios registrados.</div>';
+      var t=document.getElementById('u-count-total'); if(t) t.textContent=total;
+      var n=document.getElementById('u-count-now'); if(n) n.textContent=nowCount;
+      var co=document.getElementById('u-count-comercial'); if(co) co.textContent=comercialCount;
+      var a=document.getElementById('u-count-admin'); if(a) a.textContent=adminCount;
+    })
+    .catch(function(e){ console.warn('renderUsersList error:', e); });
 }
 
-function renderUsersKpis() { renderUsersList(); }
-
-// Modal crear/editar usuario
 var editingUserId = null;
+
 function openUserModal(docId) {
   editingUserId = docId;
   var overlay = document.getElementById('user-modal-overlay');
   var title   = document.getElementById('user-modal-title');
   var body    = document.getElementById('user-modal-body');
   var footer  = document.getElementById('user-modal-footer');
+  if(!overlay) return;
 
   if(docId) {
-    // Editar
     title.textContent = 'Editar usuario';
     window._db.collection('users').doc(docId).get().then(function(snap){
       var u = snap.data() || {};
-      body.innerHTML = renderUserForm(u.nombre||'', u.email||'', u.perfil||'now', true);
-      footer.innerHTML = '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
-        '<button class="btn-edit save" onclick="saveUser('' + docId + '')">Guardar cambios</button>';
+      body.innerHTML = buildUserForm(u.nombre||'', u.email||'', u.perfil||'now', true);
+      footer.innerHTML =
+        '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
+        '<button class="btn-edit save" onclick="saveUser(''+docId+'')">Guardar</button>';
     });
   } else {
-    // Nuevo
     title.textContent = 'Nuevo usuario';
-    body.innerHTML = renderUserForm('','','now', false);
-    footer.innerHTML = '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
+    body.innerHTML = buildUserForm('','','now',false);
+    footer.innerHTML =
+      '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
       '<button class="btn-edit save" onclick="saveUser(null)">Crear usuario</button>';
   }
   overlay.classList.add('visible');
 }
 
-function renderUserForm(nombre, email, perfil, disableEmail) {
-  return '<div class="modal-section">' +
-    '<div class="modal-section-title">Nombre</div>' +
-    '<input class="edit-field" id="u-nombre" value="' + nombre + '" placeholder="Nombre completo">' +
-  '</div>' +
-  '<div class="modal-section">' +
-    '<div class="modal-section-title">Email</div>' +
-    '<input class="edit-field" id="u-email" type="email" value="' + email + '" placeholder="correo@empresa.com"' + (disableEmail?' style="opacity:0.6" readonly':'') + '>' +
-    (!disableEmail ? '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">⚠ El usuario deberá usar este email para iniciar sesión. Deberás también crearlo en Firebase Authentication.</div>' : '') +
-  '</div>' +
-  '<div class="modal-section">' +
-    '<div class="modal-section-title">Perfil</div>' +
+function buildUserForm(nombre, email, perfil, disableEmail) {
+  return '<div class="modal-section"><div class="modal-section-title">Nombre</div>' +
+    '<input class="edit-field" id="u-nombre" value="'+nombre+'" placeholder="Nombre completo"></div>' +
+    '<div class="modal-section"><div class="modal-section-title">Email</div>' +
+    '<input class="edit-field" id="u-email" type="email" value="'+email+'" placeholder="correo@empresa.com"'+(disableEmail?' readonly style="opacity:.6"':'')+'>'+
+    (!disableEmail ? '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">El usuario debe existir también en Firebase Auth Console.</div>' : '')+
+    '</div><div class="modal-section"><div class="modal-section-title">Perfil</div>' +
     '<select class="edit-select" id="u-perfil" style="width:100%">' +
-      '<option value="admin"' + (perfil==='admin'?' selected':'') + '>Admin — edita todo</option>' +
-      '<option value="now"' + (perfil==='now'?' selected':'') + '>NOW — ve todo, mueve matriz, agrega observaciones</option>' +
-      '<option value="comercial"' + (perfil==='comercial'?' selected':'') + '>Comercial — solo lectura</option>' +
-    '</select>' +
-  '</div>';
+      '<option value="admin"'+(perfil==='admin'?' selected':'')+'>Admin — edita todo</option>' +
+      '<option value="now"'+(perfil==='now'?' selected':'')+'>NOW — ve todo, mueve matriz, agrega observaciones</option>' +
+      '<option value="comercial"'+(perfil==='comercial'?' selected':'')+'>Comercial — solo lectura</option>' +
+    '</select></div>';
 }
 
 function saveUser(docId) {
-  var nombre = document.getElementById('u-nombre').value.trim();
-  var email  = document.getElementById('u-email').value.trim();
-  var perfil = document.getElementById('u-perfil').value;
+  var nombre = (document.getElementById('u-nombre')||{}).value||'';
+  var email  = (document.getElementById('u-email')||{}).value||'';
+  var perfil = (document.getElementById('u-perfil')||{}).value||'now';
+  nombre = nombre.trim(); email = email.trim();
   if(!nombre||!email){ alert('Completa nombre y email.'); return; }
-
   var id = docId || email.replace(/[.@]/g,'_');
   window._db.collection('users').doc(id).set({
     email:email, nombre:nombre, perfil:perfil,
     updatedAt: new Date().toISOString()
-  }, {merge:true}).then(function(){
-    closeUserModal();
-    renderUsersList();
-    if(email === currentUserEmail) {
-      currentUserProfile = perfil;
-      applyProfilePermissions();
-    }
-  }).catch(function(e){ alert('Error: ' + e.message); });
+  },{merge:true})
+    .then(function(){ closeUserModal(); renderUsersList(); })
+    .catch(function(e){ alert('Error: '+e.message); });
 }
 
 function deleteUser(docId, email) {
   if(email === currentUserEmail){ alert('No puedes eliminar tu propio usuario.'); return; }
-  if(!confirm('¿Eliminar usuario ' + email + '?')) return;
-  window._db.collection('users').doc(docId).delete().then(function(){
-    renderUsersList();
-  }).catch(function(e){ alert('Error: ' + e.message); });
+  if(!confirm('¿Eliminar usuario '+email+'?')) return;
+  window._db.collection('users').doc(docId).delete()
+    .then(function(){ renderUsersList(); })
+    .catch(function(e){ alert('Error: '+e.message); });
 }
 
 function closeUserModal() {
-  document.getElementById('user-modal-overlay').classList.remove('visible');
-  editingUserId = null;
+  var o = document.getElementById('user-modal-overlay');
+  if(o) o.classList.remove('visible');
 }
 
 function closeUserModalOverlay(e) {
-  if(e.target === document.getElementById('user-modal-overlay')) closeUserModal();
+  if(e.target===document.getElementById('user-modal-overlay')) closeUserModal();
 }
 
-// Override switchView para cargar usuarios
-var _origSwitchView = switchView;
-switchView = function(vid, btn) {
-  _origSwitchView(vid, btn);
-  if(vid === 'usuarios') renderUsersList();
-};
+// Override switchView para cargar usuarios al entrar
+(function(){
+  var orig = switchView;
+  switchView = function(vid, btn) {
+    orig(vid, btn);
+    if(vid==='usuarios') renderUsersList();
+  };
+})();
 
 // Override renderOppList para aplicar permisos
-var _origRenderOppList = renderOppList;
-renderOppList = function() {
-  _origRenderOppList();
-  if(!canDo('editOpps')) {
-    document.querySelectorAll('.row-btn').forEach(function(b){ b.style.display='none'; });
-    var ba = document.querySelector('.btn-add');
-    if(ba) ba.style.display='none';
-  }
-  if(!canDo('moveMatrix')) {
-    document.querySelectorAll('.matrix-chip').forEach(function(c){ c.draggable=false; c.style.cursor='default'; });
-  }
-};
+(function(){
+  var orig = renderOppList;
+  renderOppList = function() {
+    orig();
+    if(!canDo('editOpps')) {
+      document.querySelectorAll('.row-btn').forEach(function(b){ b.style.display='none'; });
+      document.querySelectorAll('.btn-add').forEach(function(b){ b.style.display='none'; });
+    }
+    if(!canDo('moveMatrix')) {
+      document.querySelectorAll('.matrix-chip').forEach(function(ch){
+        ch.draggable=false; ch.style.cursor='default';
+      });
+    }
+  };
+})();
 
-// Hookear loadFromFirestore para cargar perfil del usuario
-var _origLoadFromFirestore = loadFromFirestore;
-loadFromFirestore = function() {
-  _origLoadFromFirestore();
-  if(currentUserEmail) loadUserProfile(currentUserEmail);
-};
-
-// Hookear initAuth para capturar email
-var _origStartAuth = null; // se redefine abajo inline
 
 </script>
 </div><!-- /app-shell -->
