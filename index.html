@@ -1239,6 +1239,203 @@ function scrollToOpp(id){switchView('oportunidades',document.querySelectorAll('.
 
 renderAll();
 
+
+// ═══════════════════════════════════════════
+// GANTT
+// ═══════════════════════════════════════════
+var ganttOrder = null;
+var ganttDraggingId = null;
+
+function getWeeksFromTime(timeStr) {
+  if(!timeStr) return 4;
+  var nums = timeStr.match(/\d+/g);
+  if(!nums) return 4;
+  if(nums.length === 1) return parseInt(nums[0]);
+  return Math.round((parseInt(nums[0]) + parseInt(nums[1])) / 2);
+}
+
+function getBarColor(impact) {
+  if(impact === 'Alto')  return '#0D9F5A';
+  if(impact === 'Medio') return '#B45309';
+  return '#94A3B8';
+}
+
+function getGanttStartDate() {
+  var inp = document.getElementById('gantt-start-date');
+  if(inp && inp.value) return new Date(inp.value + 'T00:00:00');
+  return new Date();
+}
+
+function addWeeks(date, weeks) {
+  var d = new Date(date);
+  d.setDate(d.getDate() + weeks * 7);
+  return d;
+}
+
+function formatDateShort(date) {
+  return date.toLocaleDateString('es-CL', { day:'numeric', month:'short', year:'2-digit' });
+}
+
+function getWeekLabel(date) {
+  return date.toLocaleDateString('es-CL', { day:'numeric', month:'short' });
+}
+
+function isCurrentWeek(weekStart) {
+  var now = new Date();
+  var weekEnd = addWeeks(weekStart, 1);
+  return now >= weekStart && now < weekEnd;
+}
+
+function renderGantt() {
+  if(!ganttOrder) ganttOrder = OPPS.map(function(o){ return o.id; });
+  var startDate = getGanttStartDate();
+  var LABEL_W = 260;
+  var WEEK_W  = 60;
+
+  // Calcular total semanas
+  var totalWeeks = 0;
+  ganttOrder.forEach(function(id) {
+    var opp = OPPS.find(function(o){ return o.id === id; });
+    if(opp) totalWeeks += getWeeksFromTime(opp.time);
+  });
+  var visibleWeeks = Math.max(totalWeeks + 2, 16);
+
+  // KPIs
+  var endDate = addWeeks(startDate, totalWeeks);
+  var el1 = document.getElementById('g-total-weeks');
+  if(el1) el1.textContent = totalWeeks;
+  var el2 = document.getElementById('g-end-date');
+  if(el2) el2.textContent = formatDateShort(endDate);
+  var el3 = document.getElementById('g-opp-count');
+  if(el3) el3.textContent = ganttOrder.length;
+
+  var gridCols = LABEL_W + 'px repeat(' + visibleWeeks + ', ' + WEEK_W + 'px)';
+
+  // Header semanas
+  var header = document.getElementById('gantt-time-header');
+  if(!header) return;
+  header.style.gridTemplateColumns = gridCols;
+  var hHtml = '<div class="gantt-th-label">Iniciativa</div>';
+  for(var w = 0; w < visibleWeeks; w++) {
+    var wDate = addWeeks(startDate, w);
+    var isCurr = isCurrentWeek(wDate);
+    hHtml += '<div class="gantt-week-cell' + (isCurr ? ' current' : '') + '">S' + (w+1) + '<br><span style="font-size:9px;font-weight:400">' + getWeekLabel(wDate) + '</span></div>';
+  }
+  header.innerHTML = hHtml;
+
+  // Body
+  var body = document.getElementById('gantt-body');
+  if(!body) return;
+  var cursor = 0;
+  var rowsHtml = '';
+
+  ganttOrder.forEach(function(id) {
+    var opp = OPPS.find(function(o){ return o.id === id; });
+    if(!opp) return;
+    var dur = getWeeksFromTime(opp.time);
+    var color = getBarColor(opp.impact);
+    var impClass = opp.impact === 'Alto' ? 'high-impact' : 'med-impact';
+    var diffClass = opp.diff === 'Alta' ? 'high-diff' : opp.diff === 'Media' ? 'med-diff' : 'low-diff';
+
+    rowsHtml += '<div class="gantt-row" style="grid-template-columns:' + gridCols + ';display:grid" ' +
+      'draggable="true" data-id="' + id + '" ' +
+      'ondragstart="onGanttDragStart(event,' + id + ')" ' +
+      'ondragover="onGanttDragOver(event,this)" ' +
+      'ondragleave="onGanttDragLeave(this)" ' +
+      'ondrop="onGanttDrop(event,this,' + id + ')">' +
+      '<div class="gantt-row-label">' +
+        '<div class="gantt-row-num" style="background:' + opp.color + '">' + opp.id + '</div>' +
+        '<div>' +
+          '<div class="gantt-row-name">' + opp.name + '</div>' +
+          '<div class="gantt-row-pills">' +
+            '<span class="gantt-pill ' + impClass + '">Impacto ' + opp.impact + '</span>' +
+            '<span class="gantt-pill ' + diffClass + '">' + opp.diff + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    for(var w = 0; w < visibleWeeks; w++) {
+      var wDate = addWeeks(startDate, w);
+      var isCurr = isCurrentWeek(wDate);
+      rowsHtml += '<div class="gantt-cell' + (isCurr ? ' current-week' : '') + '">';
+      if(w === cursor) {
+        var barPx = (dur * WEEK_W) - 8;
+        rowsHtml += '<div class="gantt-bar" style="background:' + color + ';left:4px;width:' + barPx + 'px" onclick="openModal(' + id + ',\'view\')">' + opp.time + '</div>';
+      }
+      rowsHtml += '</div>';
+    }
+    rowsHtml += '</div>';
+    cursor += dur;
+  });
+
+  body.innerHTML = rowsHtml;
+}
+
+function onGanttDragStart(e, id) {
+  ganttDraggingId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', String(id));
+  setTimeout(function(){
+    var el = document.querySelector('.gantt-row[data-id="' + id + '"]');
+    if(el) el.classList.add('dragging');
+  }, 0);
+}
+
+function onGanttDragOver(e, el) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.gantt-row').forEach(function(r){
+    r.classList.remove('drag-over-top','drag-over-bottom');
+  });
+  var rect = el.getBoundingClientRect();
+  el.classList.add(e.clientY < rect.top + rect.height/2 ? 'drag-over-top' : 'drag-over-bottom');
+}
+
+function onGanttDragLeave(el) {
+  el.classList.remove('drag-over-top','drag-over-bottom');
+}
+
+function onGanttDrop(e, el, targetId) {
+  e.preventDefault();
+  document.querySelectorAll('.gantt-row').forEach(function(r){
+    r.classList.remove('dragging','drag-over-top','drag-over-bottom');
+  });
+  if(!ganttDraggingId || ganttDraggingId === targetId) return;
+  var fromIdx = ganttOrder.indexOf(ganttDraggingId);
+  var toIdx   = ganttOrder.indexOf(targetId);
+  if(fromIdx === -1 || toIdx === -1) return;
+  var rect = el.getBoundingClientRect();
+  if(e.clientY >= rect.top + rect.height/2) toIdx++;
+  if(fromIdx < toIdx) toIdx--;
+  ganttOrder.splice(fromIdx, 1);
+  ganttOrder.splice(toIdx, 0, ganttDraggingId);
+  ganttDraggingId = null;
+  renderGantt();
+}
+
+function autoOrderGantt() {
+  var impScore = {'Alto':3,'Medio':2,'Bajo':1};
+  var difScore = {'Baja':3,'Media':2,'Alta':1};
+  if(!ganttOrder) ganttOrder = OPPS.map(function(o){ return o.id; });
+  ganttOrder.sort(function(a,b){
+    var oa = OPPS.find(function(o){ return o.id===a; });
+    var ob = OPPS.find(function(o){ return o.id===b; });
+    var sa = (impScore[oa.impact]||0)*10 + (difScore[oa.diff]||0);
+    var sb = (impScore[ob.impact]||0)*10 + (difScore[ob.diff]||0);
+    return sb - sa;
+  });
+  renderGantt();
+}
+
+// Init fecha
+(function(){
+  var inp = document.getElementById('gantt-start-date');
+  if(!inp) return;
+  var today = new Date();
+  inp.value = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  inp.addEventListener('change', renderGantt);
+})();
+
 </script>
 </body>
 </html>
