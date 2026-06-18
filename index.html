@@ -4,12 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>NOW Control · Detector de Oportunidades</title>
-<!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
+<!-- Firebase SDK compat -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script>
   const firebaseConfig = {
     apiKey: "AIzaSyCnXo-puSNUEp94lINAFB6qFtkdTe_AaCg",
     authDomain: "now-control.firebaseapp.com",
@@ -18,13 +17,9 @@
     messagingSenderId: "357996662445",
     appId: "1:357996662445:web:4f914765d5f1d069024024"
   };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  // Exponer globalmente
-  window._fb = { auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged, doc, getDoc, setDoc, onSnapshot, collection };
+  firebase.initializeApp(firebaseConfig);
+  window._auth = firebase.auth();
+  window._db   = firebase.firestore();
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
@@ -1595,10 +1590,9 @@ function doLogin() {
   errEl.style.display = 'none';
   if(!email||!pw){ errEl.textContent='Completa email y contraseña.'; errEl.style.display='block'; return; }
 
-  var fb = window._fb;
-  if(!fb){ errEl.textContent='Firebase no disponible.'; errEl.style.display='block'; return; }
+  if(!window._auth){ errEl.textContent='Firebase no disponible.'; errEl.style.display='block'; return; }
 
-  fb.signInWithEmailAndPassword(fb.auth, email, pw)
+  window._auth.signInWithEmailAndPassword(email, pw)
     .catch(function(err){
       errEl.textContent = err.code === 'auth/invalid-credential' ? 'Email o contraseña incorrectos.' : 'Error: ' + err.message;
       errEl.style.display = 'block';
@@ -1606,8 +1600,7 @@ function doLogin() {
 }
 
 function doLogout() {
-  var fb = window._fb;
-  if(fb) fb.signOut(fb.auth);
+  if(window._auth) window._auth.signOut();
 }
 
 // Guardar nota de proceso en Firestore
@@ -1618,23 +1611,20 @@ function saveProcessNote(key) {
   var saved = document.getElementById('panel-notes-saved');
   if(saved){ saved.textContent='Guardado'; saved.style.opacity='1'; setTimeout(function(){ saved.style.opacity='0'; },1500); }
 
-  var fb = window._fb;
-  if(!fb||!fb.auth.currentUser) return;
-  var ref = fb.doc(fb.db, 'data', 'process_notes');
-  fb.setDoc(ref, PROCESS_NOTES, {merge:true}).catch(function(e){ console.warn('Firestore error:', e); });
+  if(!window._auth||!window._auth.currentUser) return;
+  window._db.doc('data/process_notes').set(PROCESS_NOTES, {merge:true}).catch(function(e){ console.warn('Firestore error:', e); });
 }
 
 // Guardar oportunidades en Firestore
 function saveOppsToFirestore() {
-  var fb = window._fb;
-  if(!fb||!fb.auth.currentUser) return;
+  if(!window._auth||!window._auth.currentUser) return;
   var payload = {
     opps: OPPS,
     opp_detail: OPP_DETAIL,
     gantt_order: ganttOrder || OPPS.map(function(o){ return o.id; }),
     updated: new Date().toISOString()
   };
-  fb.setDoc(fb.doc(fb.db,'data','opps'), payload).catch(function(e){ console.warn('Firestore error:', e); });
+  window._db.doc('data/opps').set(payload).catch(function(e){ console.warn('Firestore error:', e); });
 }
 
 // Hook saveOppsToFirestore en saveEdit, saveNew, deleteOpp, confirmDrag
@@ -1650,20 +1640,19 @@ confirmDrag = function(){ _origConfirmDrag(); saveOppsToFirestore(); };
 
 // Cargar datos desde Firestore
 function loadFromFirestore() {
-  var fb = window._fb;
-  if(!fb) return;
+  if(!window._db) return;
 
   // Cargar notas de procesos
-  fb.getDoc(fb.doc(fb.db,'data','process_notes')).then(function(snap){
-    if(snap.exists()) {
+  window._db.doc('data/process_notes').get().then(function(snap){
+    if(snap.exists) {
       var data = snap.data();
       Object.keys(data).forEach(function(k){ PROCESS_NOTES[k] = data[k]; });
     }
   }).catch(function(e){ console.warn('process_notes load error:', e); });
 
-  // Cargar oportunidades y escuchar cambios en tiempo real
-  fb.onSnapshot(fb.doc(fb.db,'data','opps'), function(snap){
-    if(snap.exists()) {
+  // Escuchar oportunidades en tiempo real
+  window._db.doc('data/opps').onSnapshot(function(snap){
+    if(snap.exists) {
       var data = snap.data();
       if(data.opps && Array.isArray(data.opps)) {
         OPPS.length = 0;
@@ -1684,33 +1673,26 @@ function loadFromFirestore() {
 
 // Observer de autenticación — controla qué se muestra
 (function initAuth(){
-  function waitForFb(tries) {
-    if(tries <= 0) { console.warn('Firebase no cargó'); return; }
-    var fb = window._fb;
-    if(!fb) { setTimeout(function(){ waitForFb(tries-1); }, 200); return; }
-
-    fb.onAuthStateChanged(fb.auth, function(user) {
+  function startAuth() {
+    if(!window._auth) { setTimeout(startAuth, 150); return; }
+    window._auth.onAuthStateChanged(function(user) {
       var loading = document.getElementById('app-loading');
       var loginSc = document.getElementById('login-screen');
       var appShell= document.getElementById('app-shell');
-
       if(loading) loading.style.display = 'none';
-
       if(user) {
-        // Usuario autenticado
-        if(loginSc)  loginSc.style.display  = 'none';
-        if(appShell) appShell.style.display  = 'block';
+        if(loginSc)  loginSc.style.display = 'none';
+        if(appShell) appShell.style.display = 'block';
         var emailEl = document.getElementById('sb-user-email');
         if(emailEl) emailEl.textContent = user.email;
         loadFromFirestore();
       } else {
-        // No autenticado
-        if(loginSc)  { loginSc.style.display  = 'flex'; }
-        if(appShell) appShell.style.display  = 'none';
+        if(loginSc)  loginSc.style.display = 'flex';
+        if(appShell) appShell.style.display = 'none';
       }
     });
   }
-  waitForFb(20);
+  startAuth();
 })();
 
 </script>
