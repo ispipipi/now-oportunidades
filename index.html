@@ -4,6 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>NOW Control · Detector de Oportunidades</title>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCnXo-puSNUEp94lINAFB6qFtkdTe_AaCg",
+    authDomain: "now-control.firebaseapp.com",
+    projectId: "now-control",
+    storageBucket: "now-control.firebasestorage.app",
+    messagingSenderId: "357996662445",
+    appId: "1:357996662445:web:4f914765d5f1d069024024"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // Exponer globalmente
+  window._fb = { auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged, doc, getDoc, setDoc, onSnapshot, collection };
+</script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -824,10 +846,52 @@ body {
   transition:opacity .3s;
   pointer-events:none;
 }
+
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
+<!-- LOADING -->
+<div id="app-loading" style="position:fixed;inset:0;background:#EDF2F7;display:flex;align-items:center;justify-content:center;z-index:9999;">
+  <div style="text-align:center">
+    <div style="width:40px;height:40px;border:3px solid #E2E8F0;border-top-color:#1BB4D8;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;"></div>
+    <div style="font-family:Inter,system-ui,sans-serif;font-size:13px;color:#61758A;font-weight:500;">Cargando...</div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen" style="display:none;position:fixed;inset:0;background:#EDF2F7;z-index:9000;align-items:center;justify-content:center;font-family:Inter,system-ui,sans-serif;">
+  <div style="background:#fff;border-radius:20px;padding:40px 44px;width:400px;max-width:94vw;box-shadow:0 8px 40px rgba(13,30,51,0.12);border:1px solid rgba(13,30,51,0.08);">
+    <div style="margin-bottom:28px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#1BB4D8;margin-bottom:10px;">Detector de oportunidades</div>
+      <div style="font-size:26px;font-weight:800;color:#0D1E33;letter-spacing:-0.5px;margin-bottom:4px;">Iniciar sesión</div>
+      <div style="font-size:13px;color:#61758A;">Acceso restringido — NOW / NPR</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:11px;font-weight:600;color:#61758A;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Correo electrónico</label>
+      <input id="login-email" type="email" placeholder="tu@email.com"
+        style="width:100%;font-family:Inter,system-ui,sans-serif;font-size:14px;color:#0D1E33;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 14px;outline:none;transition:border-color .15s;background:#fff;"
+        onfocus="this.style.borderColor='#1BB4D8'" onblur="this.style.borderColor='#E2E8F0'">
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="display:block;font-size:11px;font-weight:600;color:#61758A;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Contraseña</label>
+      <input id="login-password" type="password" placeholder="••••••••"
+        style="width:100%;font-family:Inter,system-ui,sans-serif;font-size:14px;color:#0D1E33;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 14px;outline:none;transition:border-color .15s;background:#fff;"
+        onfocus="this.style.borderColor='#1BB4D8'" onblur="this.style.borderColor='#E2E8F0'"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button onclick="doLogin()"
+      style="width:100%;background:#1BB4D8;color:#fff;border:none;font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:700;padding:12px;border-radius:8px;cursor:pointer;transition:background .15s;box-shadow:0 2px 12px rgba(27,180,216,0.25);"
+      onmouseover="this.style.background='#17a0c2'" onmouseout="this.style.background='#1BB4D8'">
+      Entrar
+    </button>
+    <div id="login-error" style="margin-top:12px;font-size:12px;color:#C41B1B;text-align:center;display:none;"></div>
+  </div>
+</div>
+
+<!-- APP (oculta hasta auth) -->
+<div id="app-shell" style="display:none;">
 <aside class="sidebar">
   <div class="sb-brand">
     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAEHElEQVR4nO3c25LbKBAAULyV//9l70tU5XJGNogGmtE5T8nYQiBocZ0pBQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAC4o8fqDLx7Pp/PUkp5PB6P4//Hv6+m9SoqravpjEqrJw3O/VmdgRmiGs9r0Eal1eN4eUTkh5+lDZDISo96y/72PPGv/1Zn4Mzjr2xpHelFpBGVTikCZZS0PUikqLd1xLzoPU+9+RIYdDkaUKaGlDFPAAAAAKmlPJ4QeRQj071bVq2yHGVZeY8M0m4Uvpq1HDriPs8XM647S6s3jQz3WGGLACllzwqIynNUoETJlJfRtgmQUvapmFENuifNXZ5dNlsFSCn5K3p0/laX/9P9V+dthC3PYkWchRqhtoF8yntNGt/K7wh8nO16kEO2BlCTn5oTvLWnfK+Uv/eZZXvmM2wbIKXkqbBv+bhytL3mmizlf5UxTz22DpBS8ldIxBH7K0OyjEPQHaULkBVDhx6f7p3tl7RKuf6sWq7L/tJqERIgkZtakX+gYaWVu/93FtkWS+lYxTrLwOvPZ3fzs1e3Zg9vWlenolazsgfgt7bYUx+XepDaB7biwWavzF5nlZ1tCDSrHmqXxa/mpzlAWm8U+f3Hi8h7XmFyvN6Mep4ySR8xN8kQJDvo7XGyPsdZizlNATL6YbWmf9e3dYZyP9789J1R7WVm0E47atJTqKvHKmZP2jM03Egzh5EjRhk/pdnaJtLtg7yrKUzv2aZPsg4xWsx4w0f+gleUiEBOHyC1RgXJb+sVakX1Ht+efVRwjKqn1AFy5fzS2We/oSfokTHQI+vkbDjVm27KALlyuO/12rPP7h4kP5kxzBrVeD+luXwnvdXsyfKKifvsRYFRVu7x1N6j5iRHT/qHpgCJOrowQ6bVrWhX6+DsmWTZWc9YJ1OGWKsK/m24dVRaz1GEu6itw1l1feU+V65pDpDIifMMo3bcZ2+O8a+WtnW1HV7qQWom0T0T7WgZ1+iv6p0fzHjzznq7117XU/9dk/QsAbDKpzF91t3m32hkO0y5zDvC7GCObsyf0tv9RZU5/7cJkFLGdP0z9l2ig23G2D1zo29xqwApZb+eJHpdnza3C5BS4htVzUpZa6DUXNNTjtGT28h8rHTLACllfpCU8v0PCnz7vPV+q+2Qx2+2L0Cv6MY4Y6UpquHNGL7tvrhw2x7k0DMJj/h+q8j0P6W1Q+Od4fYBUsqY4dYOac5wluddyiJA/hpRYRGNekVg7NJ4Z/Ag3ryOmVfuhs9spO95Gl1uAQgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAZPc/k+D4WWeY2ucAAAAASUVORK5CYII=" alt="NOW">
@@ -866,7 +930,13 @@ body {
       Transversal
     </button>
   </nav>
-  <div class="sb-footer">NOW / NDX &middot; Junio 2025</div>
+  <div class="sb-footer" style="display:flex;align-items:center;justify-content:space-between;">
+  <span id="sb-user-email" style="font-size:10px;"></span>
+  <button onclick="doLogout()" style="background:none;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-family:inherit;font-size:10px;font-weight:600;padding:3px 8px;border-radius:5px;cursor:pointer;transition:all .15s;"
+    onmouseover="this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.4)'">
+    Salir
+  </button>
+</div>
 </aside>
 
 <main class="main">
@@ -1513,6 +1583,137 @@ function autoOrderGantt() {
   inp.addEventListener('change', renderGantt);
 })();
 
+
+// ═══════════════════════════════════════════
+// FIREBASE AUTH + PERSISTENCIA
+// ═══════════════════════════════════════════
+
+function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pw    = document.getElementById('login-password').value;
+  var errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  if(!email||!pw){ errEl.textContent='Completa email y contraseña.'; errEl.style.display='block'; return; }
+
+  var fb = window._fb;
+  if(!fb){ errEl.textContent='Firebase no disponible.'; errEl.style.display='block'; return; }
+
+  fb.signInWithEmailAndPassword(fb.auth, email, pw)
+    .catch(function(err){
+      errEl.textContent = err.code === 'auth/invalid-credential' ? 'Email o contraseña incorrectos.' : 'Error: ' + err.message;
+      errEl.style.display = 'block';
+    });
+}
+
+function doLogout() {
+  var fb = window._fb;
+  if(fb) fb.signOut(fb.auth);
+}
+
+// Guardar nota de proceso en Firestore
+function saveProcessNote(key) {
+  var ta = document.getElementById('panel-notes-ta');
+  if(!ta) return;
+  PROCESS_NOTES[key] = ta.value;
+  var saved = document.getElementById('panel-notes-saved');
+  if(saved){ saved.textContent='Guardado'; saved.style.opacity='1'; setTimeout(function(){ saved.style.opacity='0'; },1500); }
+
+  var fb = window._fb;
+  if(!fb||!fb.auth.currentUser) return;
+  var ref = fb.doc(fb.db, 'data', 'process_notes');
+  fb.setDoc(ref, PROCESS_NOTES, {merge:true}).catch(function(e){ console.warn('Firestore error:', e); });
+}
+
+// Guardar oportunidades en Firestore
+function saveOppsToFirestore() {
+  var fb = window._fb;
+  if(!fb||!fb.auth.currentUser) return;
+  var payload = {
+    opps: OPPS,
+    opp_detail: OPP_DETAIL,
+    gantt_order: ganttOrder || OPPS.map(function(o){ return o.id; }),
+    updated: new Date().toISOString()
+  };
+  fb.setDoc(fb.doc(fb.db,'data','opps'), payload).catch(function(e){ console.warn('Firestore error:', e); });
+}
+
+// Hook saveOppsToFirestore en saveEdit, saveNew, deleteOpp, confirmDrag
+var _origSaveEdit   = saveEdit;
+var _origSaveNew    = saveNew;
+var _origDeleteOpp  = deleteOpp;
+var _origConfirmDrag = confirmDrag;
+
+saveEdit = function(id){ _origSaveEdit(id); saveOppsToFirestore(); };
+saveNew  = function(){ _origSaveNew(); saveOppsToFirestore(); };
+deleteOpp = function(id){ _origDeleteOpp(id); saveOppsToFirestore(); };
+confirmDrag = function(){ _origConfirmDrag(); saveOppsToFirestore(); };
+
+// Cargar datos desde Firestore
+function loadFromFirestore() {
+  var fb = window._fb;
+  if(!fb) return;
+
+  // Cargar notas de procesos
+  fb.getDoc(fb.doc(fb.db,'data','process_notes')).then(function(snap){
+    if(snap.exists()) {
+      var data = snap.data();
+      Object.keys(data).forEach(function(k){ PROCESS_NOTES[k] = data[k]; });
+    }
+  }).catch(function(e){ console.warn('process_notes load error:', e); });
+
+  // Cargar oportunidades y escuchar cambios en tiempo real
+  fb.onSnapshot(fb.doc(fb.db,'data','opps'), function(snap){
+    if(snap.exists()) {
+      var data = snap.data();
+      if(data.opps && Array.isArray(data.opps)) {
+        OPPS.length = 0;
+        data.opps.forEach(function(o){ OPPS.push(o); });
+      }
+      if(data.opp_detail) {
+        Object.keys(data.opp_detail).forEach(function(k){
+          OPP_DETAIL[parseInt(k)||k] = data.opp_detail[k];
+        });
+      }
+      if(data.gantt_order && Array.isArray(data.gantt_order)) {
+        ganttOrder = data.gantt_order;
+      }
+      renderAll();
+    }
+  }, function(e){ console.warn('opps snapshot error:', e); });
+}
+
+// Observer de autenticación — controla qué se muestra
+(function initAuth(){
+  function waitForFb(tries) {
+    if(tries <= 0) { console.warn('Firebase no cargó'); return; }
+    var fb = window._fb;
+    if(!fb) { setTimeout(function(){ waitForFb(tries-1); }, 200); return; }
+
+    fb.onAuthStateChanged(fb.auth, function(user) {
+      var loading = document.getElementById('app-loading');
+      var loginSc = document.getElementById('login-screen');
+      var appShell= document.getElementById('app-shell');
+
+      if(loading) loading.style.display = 'none';
+
+      if(user) {
+        // Usuario autenticado
+        if(loginSc)  loginSc.style.display  = 'none';
+        if(appShell) appShell.style.display  = 'block';
+        var emailEl = document.getElementById('sb-user-email');
+        if(emailEl) emailEl.textContent = user.email;
+        loadFromFirestore();
+      } else {
+        // No autenticado
+        if(loginSc)  { loginSc.style.display  = 'flex'; }
+        if(appShell) appShell.style.display  = 'none';
+      }
+    });
+  }
+  waitForFb(20);
+})();
+
 </script>
+</div><!-- /app-shell -->
 </body>
 </html>
