@@ -843,6 +843,25 @@ body {
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+.perfil-badge {
+  display:inline-flex; align-items:center;
+  font-size:11px; font-weight:700;
+  padding:3px 10px; border-radius:20px;
+  white-space:nowrap;
+}
+.perfil-badge.admin     { background:rgba(196,27,27,.1);  color:var(--red);    border:1px solid rgba(196,27,27,.2); }
+.perfil-badge.now       { background:rgba(13,159,90,.1);  color:var(--green);  border:1px solid rgba(13,159,90,.2); }
+.perfil-badge.comercial { background:rgba(180,83,9,.1);   color:var(--yellow); border:1px solid rgba(180,83,9,.2); }
+.user-row {
+  display:grid; grid-template-columns:1fr 180px 120px 100px;
+  gap:12px; padding:14px 18px; align-items:center;
+  border-bottom:1px solid var(--border); transition:background .12s;
+}
+.user-row:last-child { border-bottom:none; }
+.user-row:hover { background:var(--card-hover); }
+.user-name { font-size:13px; font-weight:600; color:var(--text); }
+.user-email { font-size:12px; color:var(--text-muted); margin-top:2px; }
 </style>
 </head>
 <body>
@@ -905,6 +924,12 @@ body {
     <button class="sb-item" onclick="switchView('gantt',this)">
       <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="3" y1="5" x2="14" y2="5"/><line x1="3" y1="9" x2="17" y2="9"/><line x1="3" y1="13" x2="11" y2="13"/><line x1="3" y1="17" x2="15" y2="17"/><circle cx="14" cy="5" r="1.5" fill="currentColor"/><circle cx="17" cy="9" r="1.5" fill="currentColor"/><circle cx="11" cy="13" r="1.5" fill="currentColor"/><circle cx="15" cy="17" r="1.5" fill="currentColor"/></svg>
       Roadmap
+    </button>
+    <div class="sb-divider"></div>
+    <div class="sb-label" id="sb-label-admin" style="display:none">Administración</div>
+    <button class="sb-item" id="sb-item-usuarios" style="display:none" onclick="switchView('usuarios',this)">
+      <svg class="sb-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="6" r="3"/><path d="M2 17c0-3.3 2.7-6 6-6"/><circle cx="15" cy="13" r="3"/><path d="M12 17h6"/><path d="M15 14v6"/></svg>
+      Usuarios
     </button>
     <div class="sb-divider"></div>
     <div class="sb-label">Unidades</div>
@@ -1289,6 +1314,62 @@ body {
           <span style="margin-left:auto;color:var(--text-muted)">Arrastra filas para reordenar · Haz clic en barra para ver ficha</span>
         </div>
       </div>
+    </div>
+  </div>
+
+
+  <!-- USUARIOS -->
+  <div class="view" id="view-usuarios">
+    <div class="kpi-strip">
+      <div class="kpi-cell">
+        <div class="kpi-icon blue"><svg viewBox="0 0 20 20" fill="none" stroke="#1BB4D8" stroke-width="1.6"><circle cx="10" cy="7" r="3"/><path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg></div>
+        <div><div class="kpi-num blue" id="u-count-total">0</div><div class="kpi-lbl">Usuarios totales</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon green"><svg viewBox="0 0 20 20" fill="none" stroke="#0D9F5A" stroke-width="1.6"><path d="M9 12l2 2 4-4"/><circle cx="10" cy="10" r="8"/></svg></div>
+        <div><div class="kpi-num green" id="u-count-now">0</div><div class="kpi-lbl">Usuarios NOW</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon amber"><svg viewBox="0 0 20 20" fill="none" stroke="#B45309" stroke-width="1.6"><rect x="3" y="8" width="14" height="10" rx="2"/><path d="M7 8V6a3 3 0 016 0v2"/></svg></div>
+        <div><div class="kpi-num amber" id="u-count-comercial">0</div><div class="kpi-lbl">Usuarios Comercial</div></div>
+      </div>
+      <div class="kpi-cell">
+        <div class="kpi-icon red"><svg viewBox="0 0 20 20" fill="none" stroke="#C41B1B" stroke-width="1.6"><path d="M12 2l4 4-9 9H3v-4z"/></svg></div>
+        <div><div class="kpi-num red" id="u-count-admin">0</div><div class="kpi-lbl">Administradores</div></div>
+      </div>
+    </div>
+    <div style="padding:32px 40px;max-width:900px;">
+      <div class="page-header">
+        <div>
+          <div class="page-eyebrow">Administración</div>
+          <div class="page-title">Gestión de usuarios</div>
+          <div class="page-desc">Crea, edita y elimina usuarios. Asigna perfiles de acceso.</div>
+        </div>
+        <button class="btn-add" onclick="openUserModal(null)">+ Nuevo usuario</button>
+      </div>
+
+      <!-- Tabla de usuarios -->
+      <div class="opp-list-wrap">
+        <div style="display:grid;grid-template-columns:1fr 180px 120px 100px;gap:12px;padding:12px 18px;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);border-bottom:1.5px solid var(--border-card);background:var(--bg);">
+          <div>Usuario</div><div>Email</div><div>Perfil</div><div>Acciones</div>
+        </div>
+        <div id="users-list-rows"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL USUARIO -->
+  <div class="modal-overlay" id="user-modal-overlay" onclick="closeUserModalOverlay(event)">
+    <div class="modal" style="width:480px;">
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-title" id="user-modal-title">Nuevo usuario</div>
+          <div class="modal-unit">Completa los datos del usuario</div>
+        </div>
+        <button class="modal-close" onclick="closeUserModal()">✕</button>
+      </div>
+      <div class="modal-body" id="user-modal-body"></div>
+      <div class="modal-footer" id="user-modal-footer"></div>
     </div>
   </div>
 
@@ -1683,9 +1764,11 @@ function loadFromFirestore() {
       if(user) {
         if(loginSc)  loginSc.style.display = 'none';
         if(appShell) appShell.style.display = 'block';
+        currentUserEmail = user.email;
         var emailEl = document.getElementById('sb-user-email');
         if(emailEl) emailEl.textContent = user.email;
         loadFromFirestore();
+        loadUserProfile(user.email);
       } else {
         if(loginSc)  loginSc.style.display = 'flex';
         if(appShell) appShell.style.display = 'none';
@@ -1694,6 +1777,218 @@ function loadFromFirestore() {
   }
   startAuth();
 })();
+
+
+// ═══════════════════════════════════════════
+// USUARIOS
+// ═══════════════════════════════════════════
+var currentUserProfile = null;
+var currentUserEmail   = null;
+var ADMIN_EMAIL = null; // se setea al cargar
+
+// Permisos por perfil
+var PERMS = {
+  admin:     { editOpps:true,  moveMatrix:true,  addNotes:true,  checkNotes:true,  manageUsers:true  },
+  now:       { editOpps:false, moveMatrix:true,  addNotes:true,  checkNotes:false, manageUsers:false },
+  comercial: { editOpps:false, moveMatrix:false, addNotes:false, checkNotes:false, manageUsers:false }
+};
+
+function canDo(perm) {
+  var p = currentUserProfile || 'comercial';
+  return !!(PERMS[p] && PERMS[p][perm]);
+}
+
+function applyProfilePermissions() {
+  var p = currentUserProfile || 'comercial';
+
+  // Menú usuarios — solo admin
+  var sbAdmin = document.getElementById('sb-label-admin');
+  var sbUsers = document.getElementById('sb-item-usuarios');
+  if(sbAdmin) sbAdmin.style.display = canDo('manageUsers') ? '' : 'none';
+  if(sbUsers) sbUsers.style.display = canDo('manageUsers') ? '' : 'none';
+
+  // Botón nueva oportunidad
+  var btnAdd = document.querySelector('.btn-add');
+  if(btnAdd) btnAdd.style.display = canDo('editOpps') ? '' : 'none';
+
+  // Botones editar/eliminar en lista de opps — se aplica al renderizar
+  // Drag en matriz — se aplica al renderizar
+}
+
+// Cargar perfil del usuario desde Firestore
+function loadUserProfile(email) {
+  if(!window._db) return;
+  window._db.collection('users').where('email','==',email).get().then(function(snap){
+    if(!snap.empty) {
+      var data = snap.docs[0].data();
+      currentUserProfile = data.perfil || 'comercial';
+      currentUserEmail   = email;
+    } else {
+      // Si no existe en Firestore, es el primer admin (el que creó la cuenta en Firebase Auth)
+      currentUserProfile = 'admin';
+      currentUserEmail   = email;
+      // Guardarlo como admin
+      window._db.collection('users').doc(email.replace(/[.@]/g,'_')).set({
+        email: email, nombre: email.split('@')[0], perfil: 'admin', createdAt: new Date().toISOString()
+      });
+    }
+    applyProfilePermissions();
+    renderUsersKpis();
+  }).catch(function(e){ console.warn('loadUserProfile error:', e); });
+}
+
+// Renderizar lista de usuarios
+function renderUsersList() {
+  if(!window._db) return;
+  window._db.collection('users').get().then(function(snap){
+    var rows = '';
+    var total=0, nowCount=0, comercialCount=0, adminCount=0;
+    snap.forEach(function(doc){
+      var u = doc.data();
+      total++;
+      if(u.perfil==='now') nowCount++;
+      else if(u.perfil==='comercial') comercialCount++;
+      else if(u.perfil==='admin') adminCount++;
+
+      var perfilLabel = u.perfil==='admin'?'Admin':u.perfil==='now'?'NOW':'Comercial';
+      rows += '<div class="user-row">' +
+        '<div><div class="user-name">' + (u.nombre||'—') + '</div><div class="user-email">' + u.email + '</div></div>' +
+        '<div style="font-size:12px;color:var(--text-muted)">' + u.email + '</div>' +
+        '<div><span class="perfil-badge ' + u.perfil + '">' + perfilLabel + '</span></div>' +
+        '<div class="row-actions">' +
+          '<button class="row-btn" onclick="openUserModal('' + doc.id + '')">Editar</button>' +
+          '<button class="row-btn del" onclick="deleteUser('' + doc.id + '','' + u.email + '')">✕</button>' +
+        '</div>' +
+      '</div>';
+    });
+    var el = document.getElementById('users-list-rows');
+    if(el) el.innerHTML = rows || '<div style="padding:24px;text-align:center;color:var(--text-muted);font-size:13px;">No hay usuarios registrados.</div>';
+
+    // KPIs
+    var t=document.getElementById('u-count-total'); if(t) t.textContent=total;
+    var n=document.getElementById('u-count-now'); if(n) n.textContent=nowCount;
+    var co=document.getElementById('u-count-comercial'); if(co) co.textContent=comercialCount;
+    var a=document.getElementById('u-count-admin'); if(a) a.textContent=adminCount;
+  }).catch(function(e){ console.warn('renderUsersList error:', e); });
+}
+
+function renderUsersKpis() { renderUsersList(); }
+
+// Modal crear/editar usuario
+var editingUserId = null;
+function openUserModal(docId) {
+  editingUserId = docId;
+  var overlay = document.getElementById('user-modal-overlay');
+  var title   = document.getElementById('user-modal-title');
+  var body    = document.getElementById('user-modal-body');
+  var footer  = document.getElementById('user-modal-footer');
+
+  if(docId) {
+    // Editar
+    title.textContent = 'Editar usuario';
+    window._db.collection('users').doc(docId).get().then(function(snap){
+      var u = snap.data() || {};
+      body.innerHTML = renderUserForm(u.nombre||'', u.email||'', u.perfil||'now', true);
+      footer.innerHTML = '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
+        '<button class="btn-edit save" onclick="saveUser('' + docId + '')">Guardar cambios</button>';
+    });
+  } else {
+    // Nuevo
+    title.textContent = 'Nuevo usuario';
+    body.innerHTML = renderUserForm('','','now', false);
+    footer.innerHTML = '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
+      '<button class="btn-edit save" onclick="saveUser(null)">Crear usuario</button>';
+  }
+  overlay.classList.add('visible');
+}
+
+function renderUserForm(nombre, email, perfil, disableEmail) {
+  return '<div class="modal-section">' +
+    '<div class="modal-section-title">Nombre</div>' +
+    '<input class="edit-field" id="u-nombre" value="' + nombre + '" placeholder="Nombre completo">' +
+  '</div>' +
+  '<div class="modal-section">' +
+    '<div class="modal-section-title">Email</div>' +
+    '<input class="edit-field" id="u-email" type="email" value="' + email + '" placeholder="correo@empresa.com"' + (disableEmail?' style="opacity:0.6" readonly':'') + '>' +
+    (!disableEmail ? '<div style="font-size:11px;color:var(--text-muted);margin-top:6px;">⚠ El usuario deberá usar este email para iniciar sesión. Deberás también crearlo en Firebase Authentication.</div>' : '') +
+  '</div>' +
+  '<div class="modal-section">' +
+    '<div class="modal-section-title">Perfil</div>' +
+    '<select class="edit-select" id="u-perfil" style="width:100%">' +
+      '<option value="admin"' + (perfil==='admin'?' selected':'') + '>Admin — edita todo</option>' +
+      '<option value="now"' + (perfil==='now'?' selected':'') + '>NOW — ve todo, mueve matriz, agrega observaciones</option>' +
+      '<option value="comercial"' + (perfil==='comercial'?' selected':'') + '>Comercial — solo lectura</option>' +
+    '</select>' +
+  '</div>';
+}
+
+function saveUser(docId) {
+  var nombre = document.getElementById('u-nombre').value.trim();
+  var email  = document.getElementById('u-email').value.trim();
+  var perfil = document.getElementById('u-perfil').value;
+  if(!nombre||!email){ alert('Completa nombre y email.'); return; }
+
+  var id = docId || email.replace(/[.@]/g,'_');
+  window._db.collection('users').doc(id).set({
+    email:email, nombre:nombre, perfil:perfil,
+    updatedAt: new Date().toISOString()
+  }, {merge:true}).then(function(){
+    closeUserModal();
+    renderUsersList();
+    if(email === currentUserEmail) {
+      currentUserProfile = perfil;
+      applyProfilePermissions();
+    }
+  }).catch(function(e){ alert('Error: ' + e.message); });
+}
+
+function deleteUser(docId, email) {
+  if(email === currentUserEmail){ alert('No puedes eliminar tu propio usuario.'); return; }
+  if(!confirm('¿Eliminar usuario ' + email + '?')) return;
+  window._db.collection('users').doc(docId).delete().then(function(){
+    renderUsersList();
+  }).catch(function(e){ alert('Error: ' + e.message); });
+}
+
+function closeUserModal() {
+  document.getElementById('user-modal-overlay').classList.remove('visible');
+  editingUserId = null;
+}
+
+function closeUserModalOverlay(e) {
+  if(e.target === document.getElementById('user-modal-overlay')) closeUserModal();
+}
+
+// Override switchView para cargar usuarios
+var _origSwitchView = switchView;
+switchView = function(vid, btn) {
+  _origSwitchView(vid, btn);
+  if(vid === 'usuarios') renderUsersList();
+};
+
+// Override renderOppList para aplicar permisos
+var _origRenderOppList = renderOppList;
+renderOppList = function() {
+  _origRenderOppList();
+  if(!canDo('editOpps')) {
+    document.querySelectorAll('.row-btn').forEach(function(b){ b.style.display='none'; });
+    var ba = document.querySelector('.btn-add');
+    if(ba) ba.style.display='none';
+  }
+  if(!canDo('moveMatrix')) {
+    document.querySelectorAll('.matrix-chip').forEach(function(c){ c.draggable=false; c.style.cursor='default'; });
+  }
+};
+
+// Hookear loadFromFirestore para cargar perfil del usuario
+var _origLoadFromFirestore = loadFromFirestore;
+loadFromFirestore = function() {
+  _origLoadFromFirestore();
+  if(currentUserEmail) loadUserProfile(currentUserEmail);
+};
+
+// Hookear initAuth para capturar email
+var _origStartAuth = null; // se redefine abajo inline
 
 </script>
 </div><!-- /app-shell -->
