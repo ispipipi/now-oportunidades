@@ -1892,21 +1892,34 @@ function openUserModal(docId) {
   var footer  = document.getElementById('user-modal-footer');
   if(!overlay) return;
 
+  // Limpiar footer y crear botones con addEventListener
+  function makeFooter(saveId) {
+    footer.innerHTML = '';
+    var btnCancel = document.createElement('button');
+    btnCancel.className = 'btn-edit';
+    btnCancel.textContent = 'Cancelar';
+    btnCancel.addEventListener('click', closeUserModal);
+
+    var btnSave = document.createElement('button');
+    btnSave.className = 'btn-edit save';
+    btnSave.textContent = saveId ? 'Guardar' : 'Crear usuario';
+    btnSave.addEventListener('click', function(){ saveUser(saveId); });
+
+    footer.appendChild(btnCancel);
+    footer.appendChild(btnSave);
+  }
+
   if(docId) {
     title.textContent = 'Editar usuario';
     window._db.collection('users').doc(docId).get().then(function(snap){
       var u = snap.data() || {};
       body.innerHTML = buildUserForm(u.nombre||'', u.email||'', u.perfil||'now', true);
-      footer.innerHTML =
-        '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
-        '<button class="btn-edit save" onclick="saveUser(''+docId+'')">Guardar</button>';
+      makeFooter(docId);
     });
   } else {
     title.textContent = 'Nuevo usuario';
     body.innerHTML = buildUserForm('','','now',false);
-    footer.innerHTML =
-      '<button class="btn-edit" onclick="closeUserModal()">Cancelar</button>' +
-      '<button class="btn-edit save" onclick="saveUser(null)">Crear usuario</button>';
+    makeFooter(null);
   }
   overlay.classList.add('visible');
 }
