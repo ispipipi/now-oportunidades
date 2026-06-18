@@ -7,9 +7,9 @@
 <style>
 :root{
   --green:#00C46A;--green2:#00A558;--green-dim:rgba(0,196,106,.1);--green-border:rgba(0,196,106,.18);
-  --navy:#060D1A;--navy2:#0B1525;--navy3:#0F1E35;--navy4:#152847;
-  --text:#F0F4FF;--text2:rgba(240,244,255,.65);--text3:rgba(240,244,255,.35);--text4:rgba(240,244,255,.18);
-  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.12);
+  --navy:#060D1A;--navy2:#F8FAFC;--navy3:#F1F5F9;--navy4:#E2E8F0;
+  --text:#0F172A;--text2:#334155;--text3:#64748B;--text4:#94A3B8;
+  --border:#E2E8F0;--border2:#CBD5E1;
   --red:#F04438;--red-dim:rgba(240,68,56,.12);
   --amber:#F79009;--amber-dim:rgba(247,144,9,.12);
   --blue:#2E90FA;--blue-dim:rgba(46,144,250,.1);
@@ -21,7 +21,7 @@
   --sh-lg:0 8px 32px rgba(0,0,0,.5),0 4px 12px rgba(0,0,0,.3);
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--navy);color:var(--text);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#F8FAFC;color:var(--text);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;}
 
 /* SIDEBAR */
 .sidebar{width:var(--sidebar-w);min-height:100vh;background:var(--navy);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:200;}
@@ -42,11 +42,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh;}
 
 /* TOPBAR */
-.topbar{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.topbar{background:#FFFFFF;border-bottom:1px solid #E2E8F0;padding:0 28px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
 .topbar-left{display:flex;align-items:center;gap:12px;}
 .topbar-title{font-size:14px;font-weight:700;color:var(--text);letter-spacing:-.2px;}
-.topbar-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
-.topbar-meta{font-size:11px;color:var(--text3);background:rgba(255,255,255,.04);padding:4px 12px;border-radius:20px;border:1px solid var(--border);}
+.topbar-badge{font-size:10px;font-weight:600;padding:3px 10px;border-radius:20px;background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;}
+.topbar-meta{font-size:11px;color:var(--text3);background:#F1F5F9;padding:4px 12px;border-radius:20px;border:1px solid #E2E8F0;}
 
 /* VIEWS */
 .view{display:none;}
@@ -54,8 +54,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 
 /* KPI STRIP */
-.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
-.kpi-cell{background:var(--navy2);padding:16px 24px;display:flex;align-items:center;gap:14px;}
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#E2E8F0;border-bottom:1px solid #E2E8F0;}
+.kpi-cell{background:#FFFFFF;padding:16px 24px;border-bottom:1px solid #E2E8F0;display:flex;align-items:center;gap:14px;}
 .kpi-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .kpi-icon.green{background:var(--green-dim);border:1px solid var(--green-border);}
 .kpi-icon.red{background:var(--red-dim);border:1px solid rgba(240,68,56,.2);}
@@ -71,13 +71,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 /* MAP VIEW */
 .map-layout{display:flex;flex:1;min-height:calc(100vh - 54px);}
-.map-canvas{flex:1;padding:28px;overflow:auto;background:var(--navy);}
+.map-canvas{flex:1;padding:28px;overflow:auto;background:#F8FAFC;}
 #diagram-svg{width:100%;height:600px;}
 
 /* DETAIL PANEL */
-.detail-panel{width:0;overflow:hidden;background:var(--navy2);border-left:1px solid var(--border);transition:width .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;display:flex;flex-direction:column;}
+.detail-panel{width:0;overflow:hidden;background:#FFFFFF;border-left:1px solid #E2E8F0;transition:width .25s cubic-bezier(.4,0,.2,1);flex-shrink:0;display:flex;flex-direction:column;}
 .detail-panel.open{width:400px;overflow-y:auto;}
-.panel-header{padding:20px 20px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--navy2);z-index:10;}
+.panel-header{padding:20px 20px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#FFFFFF;z-index:10;}
 .panel-close{background:none;border:none;cursor:pointer;color:var(--text3);font-size:15px;float:right;padding:3px 5px;border-radius:5px;transition:all .12s;line-height:1;}
 .panel-close:hover{background:rgba(255,255,255,.06);color:var(--text);}
 .panel-unit-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:20px;margin-bottom:8px;}
@@ -85,11 +85,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .panel-desc{font-size:12.5px;color:var(--text2);line-height:1.6;margin-top:5px;}
 .panel-body{padding:18px 20px;}
 .panel-section{margin-bottom:20px;}
-.panel-section-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+.panel-section-title{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748B;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
 .actor-list{display:flex;flex-wrap:wrap;gap:5px;}
-.actor-chip{font-size:11.5px;font-weight:500;background:rgba(255,255,255,.05);color:var(--text2);padding:4px 10px;border-radius:20px;border:1px solid var(--border);}
+.actor-chip{font-size:11.5px;font-weight:500;background:#F1F5F9;color:#334155;padding:4px 10px;border-radius:20px;border:1px solid #E2E8F0;}
 .io-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.io-box{background:var(--navy3);border-radius:var(--r-sm);border:1px solid var(--border);padding:11px 12px;}
+.io-box{background:#F8FAFC;border-radius:var(--r-sm);border:1px solid #E2E8F0;padding:11px 12px;}
 .io-box-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px;}
 .io-box-label.in{color:var(--blue);}
 .io-box-label.out{color:var(--green);}
@@ -97,8 +97,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .io-dot{width:4px;height:4px;border-radius:50%;flex-shrink:0;margin-top:6px;}
 .io-dot.in{background:var(--blue);}
 .io-dot.out{background:var(--green);}
-.opp-chip{display:flex;align-items:flex-start;gap:8px;background:rgba(247,144,9,.07);border:1px solid rgba(247,144,9,.2);border-radius:var(--r-sm);padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:all .15s;}
-.opp-chip:hover{border-color:var(--amber);background:rgba(247,144,9,.1);}
+.opp-chip{display:flex;align-items:flex-start;gap:8px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--r-sm);padding:10px 12px;margin-bottom:7px;cursor:pointer;transition:all .15s;}
+.opp-chip:hover{border-color:var(--amber);background:#FEF3C7;}
 .opp-chip-icon{font-size:12px;flex-shrink:0;margin-top:1px;}
 .opp-chip-text{font-size:12px;color:var(--text2);line-height:1.5;font-weight:500;}
 .opp-chip-tag{display:inline-block;font-size:9px;font-weight:700;background:rgba(247,144,9,.12);color:var(--amber);padding:2px 7px;border-radius:20px;margin-top:4px;letter-spacing:.04em;}
@@ -113,7 +113,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .btn-add:hover{background:var(--green2);box-shadow:0 0 28px rgba(0,196,106,.35);}
 
 /* MATRIX */
-.matrix-wrap{background:var(--navy2);border-radius:var(--r-lg);border:1px solid var(--border);padding:22px 22px 14px;margin-bottom:20px;}
+.matrix-wrap{background:#FFFFFF;border-radius:var(--r-lg);border:1px solid #E2E8F0;padding:22px 22px 14px;margin-bottom:20px;box-shadow:0 1px 4px rgba(0,0,0,.06);}
 .matrix-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:7px;letter-spacing:-.1px;}
 .matrix-hint{font-size:11px;color:var(--text3);margin-left:auto;font-weight:400;}
 .matrix-outer{display:grid;grid-template-columns:22px 1fr;grid-template-rows:1fr 26px;gap:6px;height:320px;}
@@ -124,22 +124,22 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .matrix-x-label{font-size:9px;font-weight:700;color:var(--text4);letter-spacing:.08em;text-transform:uppercase;text-align:center;}
 .matrix-cell{border-radius:var(--r);padding:10px;display:flex;flex-direction:column;gap:5px;min-height:0;transition:all .15s;}
 .matrix-cell.drag-over{box-shadow:0 0 0 2px var(--green) inset;}
-.matrix-cell.q1{background:rgba(240,68,56,.06);border:1px solid rgba(240,68,56,.18);}
-.matrix-cell.q2{background:rgba(0,196,106,.06);border:1px solid rgba(0,196,106,.2);}
-.matrix-cell.q3{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.1);}
-.matrix-cell.q4{background:rgba(247,144,9,.06);border:1px solid rgba(247,144,9,.18);}
+.matrix-cell.q1{background:#FFF1F2;border:1.5px solid #FECDD3;}
+.matrix-cell.q2{background:#F0FDF4;border:1.5px solid #BBF7D0;}
+.matrix-cell.q3{background:#F8FAFC;border:1.5px dashed #CBD5E1;}
+.matrix-cell.q4{background:#FEFCE8;border:1.5px solid #FEF08A;}
 .matrix-cell-label{font-size:8.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;opacity:.55;line-height:1.3;}
 .matrix-cell.q1 .matrix-cell-label{color:var(--red);}
 .matrix-cell.q2 .matrix-cell-label{color:var(--green);}
 .matrix-cell.q3 .matrix-cell-label{color:var(--text3);}
 .matrix-cell.q4 .matrix-cell-label{color:var(--amber);}
-.matrix-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--text2);background:var(--navy3);border:1px solid var(--border2);padding:4px 9px;border-radius:20px;cursor:grab;transition:all .15s;width:fit-content;max-width:100%;user-select:none;}
-.matrix-chip:hover{border-color:var(--green);color:var(--green);background:var(--navy4);}
+.matrix-chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:#374151;background:#FFFFFF;border:1.5px solid #E2E8F0;padding:4px 9px;border-radius:20px;cursor:grab;transition:all .15s;width:fit-content;max-width:100%;user-select:none;}
+.matrix-chip:hover{border-color:var(--green);color:var(--green-dark);background:#F0FDF4;}
 .matrix-chip:active{cursor:grabbing;opacity:.7;transform:scale(.96);}
 .matrix-chip-num{font-size:10px;font-weight:800;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;}
 
 /* DRAG CONFIRM */
-.drag-confirm{position:fixed;z-index:2000;background:var(--navy4);color:var(--text);border:1px solid var(--border2);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh-lg);font-size:13px;max-width:280px;display:none;}
+.drag-confirm{position:fixed;z-index:2000;background:#0F172A;color:#F0F4FF;border:1px solid rgba(255,255,255,.1);border-radius:var(--r);padding:14px 16px;box-shadow:var(--sh-lg);font-size:13px;max-width:280px;display:none;}
 .drag-confirm.visible{display:block;}
 .drag-confirm-title{font-weight:700;margin-bottom:4px;font-size:13px;color:var(--text);}
 .drag-confirm-desc{font-size:11.5px;color:var(--text3);margin-bottom:12px;line-height:1.5;}
@@ -149,32 +149,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .drag-confirm-ok:hover{background:var(--green2);}
 
 /* OPP LIST */
-.opp-list-wrap{background:var(--navy2);border-radius:var(--r-lg);border:1px solid var(--border);overflow:hidden;}
-.opp-list-header{display:grid;grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;gap:12px;padding:10px 18px;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text4);border-bottom:1px solid var(--border);background:var(--navy3);}
-.opp-list-row{display:grid;grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;gap:12px;padding:12px 18px;align-items:center;cursor:pointer;transition:background .12s;border-bottom:1px solid var(--border);}
+.opp-list-wrap{background:#FFFFFF;border-radius:var(--r-lg);border:1px solid #E2E8F0;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.opp-list-header{display:grid;grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;gap:12px;padding:10px 18px;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text4);border-bottom:1px solid var(--border);background:#F1F5F9;}
+.opp-list-row{display:grid;grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;gap:12px;padding:12px 18px;align-items:center;cursor:pointer;transition:background .12s;border-bottom:1px solid #E2E8F0;}
 .opp-list-row:last-child{border-bottom:none;}
-.opp-list-row:hover{background:rgba(255,255,255,.03);}
+.opp-list-row:hover{background:#F8FAFC;}
 .opp-num{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0;}
 .opp-name{font-size:13px;font-weight:600;color:var(--text);line-height:1.3;}
 .pill{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;white-space:nowrap;}
-.pill.high-impact{background:rgba(0,196,106,.1);color:var(--green);border:1px solid rgba(0,196,106,.2);}
-.pill.med-impact{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(247,144,9,.2);}
-.pill.low-impact{background:rgba(255,255,255,.05);color:var(--text3);border:1px solid var(--border);}
-.pill.high-diff{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,68,56,.2);}
-.pill.med-diff{background:rgba(247,144,9,.08);color:var(--amber);border:1px solid rgba(247,144,9,.18);}
-.pill.low-diff{background:rgba(0,196,106,.1);color:var(--green);border:1px solid rgba(0,196,106,.2);}
+.pill.high-impact{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;}
+.pill.med-impact{background:#FFFBEB;color:#92400E;border:1px solid #FCD34D;}
+.pill.low-impact{background:#F1F5F9;color:#64748B;border:1px solid #E2E8F0;}
+.pill.high-diff{background:#FEF2F2;color:#991B1B;border:1px solid #FECACA;}
+.pill.med-diff{background:#FFF7ED;color:#9A3412;border:1px solid #FED7AA;}
+.pill.low-diff{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0;}
 .time-badge{font-size:11px;color:var(--text3);font-weight:500;}
 .row-actions{display:flex;gap:5px;}
 .row-btn{background:none;border:1px solid var(--border);color:var(--text3);font-size:11px;font-weight:500;padding:4px 9px;border-radius:6px;cursor:pointer;font-family:inherit;transition:all .12s;}
-.row-btn:hover{border-color:var(--green);color:var(--green);}
+.row-btn:hover{border-color:var(--green);color:var(--green-dark);}
 .row-btn.del:hover{border-color:var(--red);color:var(--red);}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:1000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
 .modal-overlay.visible{display:flex;}
-.modal{background:var(--navy2);border:1px solid var(--border2);border-radius:var(--r-lg);width:640px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:modalIn .2s ease;}
+.modal{background:#FFFFFF;border:1px solid #E2E8F0;border-radius:var(--r-lg);width:640px;max-width:94vw;max-height:88vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:modalIn .2s ease;}
 @keyframes modalIn{from{opacity:0;transform:scale(.97) translateY(8px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.modal-header{padding:22px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;position:sticky;top:0;background:var(--navy2);z-index:2;}
+.modal-header{padding:22px 24px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:12px;position:sticky;top:0;background:#FFFFFF;z-index:2;}
 .modal-header-left{flex:1;}
 .modal-num{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0;margin-top:2px;}
 .modal-title{font-size:18px;font-weight:800;color:var(--text);letter-spacing:-.3px;line-height:1.2;}
@@ -183,27 +183,27 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .modal-close:hover{background:rgba(255,255,255,.06);color:var(--text);}
 .modal-body{padding:22px 24px;}
 .modal-indicators{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:22px;}
-.modal-ind{background:var(--navy3);border-radius:var(--r-sm);border:1px solid var(--border);padding:13px 14px;text-align:center;}
+.modal-ind{background:#F8FAFC;border-radius:var(--r-sm);border:1px solid #E2E8F0;padding:13px 14px;text-align:center;}
 .modal-ind-label{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text4);margin-bottom:8px;}
 .modal-section{margin-bottom:20px;}
-.modal-section-title{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:9px;display:flex;align-items:center;gap:5px;}
+.modal-section-title{font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#64748B;margin-bottom:9px;display:flex;align-items:center;gap:5px;}
 .modal-desc{font-size:13.5px;color:var(--text2);line-height:1.7;}
 .modal-bullets{list-style:none;}
 .modal-bullets li{font-size:13px;color:var(--text2);padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
 .modal-bullets li:last-child{border-bottom:none;}
 .bullet-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px;}
 .tech-tags{display:flex;flex-wrap:wrap;gap:7px;}
-.tech-tag{font-size:11.5px;font-weight:500;background:rgba(255,255,255,.05);color:var(--text2);padding:4px 11px;border-radius:20px;border:1px solid var(--border);}
-.modal-footer{padding:14px 24px 20px;display:flex;gap:9px;justify-content:flex-end;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--navy2);z-index:2;}
-.btn-edit{background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--text2);font-family:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;}
-.btn-edit:hover{border-color:var(--green);color:var(--green);}
+.tech-tag{font-size:11.5px;font-weight:500;background:#F1F5F9;color:#334155;padding:4px 11px;border-radius:20px;border:1px solid #E2E8F0;}
+.modal-footer{padding:14px 24px 20px;display:flex;gap:9px;justify-content:flex-end;border-top:1px solid var(--border);position:sticky;bottom:0;background:#FFFFFF;z-index:2;}
+.btn-edit{background:#F1F5F9;border:1px solid #CBD5E1;color:#334155;font-family:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;}
+.btn-edit:hover{border-color:var(--green);color:var(--green-dark);}
 .btn-edit.save{background:var(--green);border-color:var(--green);color:#fff;}
 .btn-edit.save:hover{background:var(--green2);}
 .btn-delete{background:none;border:1px solid rgba(240,68,56,.3);color:var(--red);font-family:inherit;font-size:13px;font-weight:600;padding:8px 16px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;margin-right:auto;}
 .btn-delete:hover{background:var(--red-dim);}
-.edit-field{width:100%;font-family:inherit;font-size:13.5px;color:var(--text);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 12px;background:var(--navy3);outline:none;transition:border-color .12s;resize:vertical;}
+.edit-field{width:100%;font-family:inherit;font-size:13.5px;color:var(--text);border:1px solid var(--border2);border-radius:var(--r-sm);padding:8px 12px;background:#F8FAFC;outline:none;transition:border-color .12s;resize:vertical;}
 .edit-field:focus{border-color:var(--green);}
-.edit-select{font-family:inherit;font-size:13px;color:var(--text);border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 10px;background:var(--navy3);outline:none;cursor:pointer;}
+.edit-select{font-family:inherit;font-size:13px;color:var(--text);border:1px solid var(--border2);border-radius:var(--r-sm);padding:6px 10px;background:#F8FAFC;outline:none;cursor:pointer;}
 .edit-select:focus{border-color:var(--green);}
 .edit-bullets-wrap{display:flex;flex-direction:column;gap:5px;}
 .edit-bullet-row{display:flex;gap:5px;align-items:center;}
@@ -211,7 +211,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .btn-remove-bullet{background:none;border:1px solid var(--border);color:var(--text3);font-size:13px;width:28px;height:28px;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s;}
 .btn-remove-bullet:hover{border-color:var(--red);color:var(--red);}
 .btn-add-bullet{background:none;border:1px dashed var(--border2);color:var(--text3);font-family:inherit;font-size:12px;font-weight:600;padding:6px 12px;border-radius:var(--r-sm);cursor:pointer;transition:all .12s;text-align:left;margin-top:4px;}
-.btn-add-bullet:hover{border-color:var(--green);color:var(--green);}
+.btn-add-bullet:hover{border-color:var(--green);color:var(--green-dark);}
 .node-process{cursor:pointer;}
 </style>
 </head>
@@ -296,160 +296,160 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
           </defs>
 
           <!-- ULTIMA MILLA -->
-          <rect x="30" y="30" width="390" height="230" rx="14" fill="rgba(0,196,106,0.04)" stroke="rgba(0,196,106,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <rect x="30" y="30" width="390" height="230" rx="14" fill="rgba(0,196,106,0.03)" stroke="rgba(0,196,106,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
           <text x="50" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#00C46A" letter-spacing="1.5">ÚLTIMA MILLA</text>
           <text x="50" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(0,196,106,0.5)">Claro · WOM · 130 técnicos</text>
 
           <g class="node-process" onclick="openPanel('recepcion-ordenes')">
-            <rect x="50" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="50" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="50" y="84" width="3" height="64" rx="1.5" fill="#00C46A"/>
-            <text x="65" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Recepción</text>
-            <text x="65" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">de órdenes</text>
+            <text x="65" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Recepción</text>
+            <text x="65" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">de órdenes</text>
             <circle cx="184" cy="93" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
             <text x="184" y="97" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
           </g>
 
           <g class="node-process" onclick="openPanel('ejecucion-terreno')">
-            <rect x="220" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="220" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="220" y="84" width="3" height="64" rx="1.5" fill="#00C46A"/>
-            <text x="235" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Ejecución</text>
-            <text x="235" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">en terreno</text>
+            <text x="235" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Ejecución</text>
+            <text x="235" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">en terreno</text>
             <circle cx="354" cy="93" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="354" y="97" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
 
           <g class="node-process" onclick="openPanel('control-alertas')">
-            <rect x="50" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="50" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#FECACA" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="50" y="174" width="3" height="64" rx="1.5" fill="#F04438"/>
-            <text x="65" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Control de</text>
-            <text x="65" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">alertas DPN</text>
+            <text x="65" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Control de</text>
+            <text x="65" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">alertas DPN</text>
             <circle cx="184" cy="183" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="184" y="187" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
 
           <g class="node-process" onclick="openPanel('rendimiento-tecnico')">
-            <rect x="220" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(122,90,248,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="220" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="220" y="174" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="235" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Rendimiento</text>
-            <text x="235" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">por técnico</text>
+            <text x="235" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Rendimiento</text>
+            <text x="235" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">por técnico</text>
             <circle cx="354" cy="183" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
             <text x="354" y="187" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
           </g>
 
-          <line x1="198" y1="116" x2="218" y2="116" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
-          <line x1="124" y1="148" x2="124" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
-          <line x1="294" y1="148" x2="294" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="198" y1="116" x2="218" y2="116" stroke="#CBD5E1" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="124" y1="148" x2="124" y2="172" stroke="#CBD5E1" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="294" y1="148" x2="294" y2="172" stroke="#CBD5E1" stroke-width="1" marker-end="url(#arr)"/>
 
           <!-- RETIRO -->
-          <rect x="450" y="30" width="420" height="230" rx="14" fill="rgba(46,144,250,0.04)" stroke="rgba(46,144,250,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <rect x="450" y="30" width="420" height="230" rx="14" fill="rgba(46,144,250,0.03)" stroke="rgba(46,144,250,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
           <text x="470" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#2E90FA" letter-spacing="1.5">RETIRO / LOGÍSTICA INVERSA</text>
           <text x="470" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(46,144,250,0.5)">Verisur · Movistar · Claro · BTR · Prosegur · ADT</text>
 
           <g class="node-process" onclick="openPanel('recepcion-retiro')">
-            <rect x="470" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="470" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="470" y="84" width="3" height="64" rx="1.5" fill="#2E90FA"/>
-            <text x="485" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Recepción</text>
-            <text x="485" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">listado retiros</text>
+            <text x="485" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Recepción</text>
+            <text x="485" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">listado retiros</text>
           </g>
 
           <g class="node-process" onclick="openPanel('ejecucion-retiro')">
-            <rect x="640" y="84" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="640" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="640" y="84" width="3" height="64" rx="1.5" fill="#2E90FA"/>
-            <text x="655" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Ejecución</text>
-            <text x="655" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y trazabilidad</text>
+            <text x="655" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Ejecución</text>
+            <text x="655" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">y trazabilidad</text>
             <circle cx="774" cy="93" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="774" y="97" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
 
           <g class="node-process" onclick="openPanel('control-series')">
-            <rect x="470" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="470" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#FECACA" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="470" y="174" width="3" height="64" rx="1.5" fill="#F04438"/>
-            <text x="485" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Control de</text>
-            <text x="485" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">series / stock</text>
+            <text x="485" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Control de</text>
+            <text x="485" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">series / stock</text>
             <circle cx="604" cy="183" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="604" y="187" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
 
           <g class="node-process" onclick="openPanel('optimizacion-rutas')">
-            <rect x="640" y="174" width="148" height="64" rx="9" fill="#0B1525" stroke="rgba(122,90,248,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="640" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="640" y="174" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="655" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Optimización</text>
-            <text x="655" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">de rutas</text>
+            <text x="655" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Optimización</text>
+            <text x="655" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">de rutas</text>
             <circle cx="774" cy="183" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
             <text x="774" y="187" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
           </g>
 
-          <line x1="618" y1="116" x2="638" y2="116" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
-          <line x1="544" y1="148" x2="544" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
-          <line x1="714" y1="148" x2="714" y2="172" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="618" y1="116" x2="638" y2="116" stroke="#CBD5E1" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="544" y1="148" x2="544" y2="172" stroke="#CBD5E1" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="714" y1="148" x2="714" y2="172" stroke="#CBD5E1" stroke-width="1" marker-end="url(#arr)"/>
 
           <!-- TORRES -->
-          <rect x="30" y="292" width="280" height="178" rx="14" fill="rgba(247,144,9,0.04)" stroke="rgba(247,144,9,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <rect x="30" y="292" width="280" height="178" rx="14" fill="rgba(247,144,9,0.03)" stroke="rgba(247,144,9,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
           <text x="50" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#F79009" letter-spacing="1.5">TORRES</text>
           <text x="50" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(247,144,9,0.5)">Construcción sitios telco</text>
 
           <g class="node-process" onclick="openPanel('gestion-hitos')">
-            <rect x="50" y="346" width="110" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="50" y="346" width="110" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="50" y="346" width="3" height="64" rx="1.5" fill="#F79009"/>
-            <text x="65" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Gestión</text>
-            <text x="65" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">de hitos</text>
+            <text x="65" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Gestión</text>
+            <text x="65" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">de hitos</text>
           </g>
 
           <g class="node-process" onclick="openPanel('fondos-rendir')">
-            <rect x="180" y="346" width="110" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="180" y="346" width="110" height="64" rx="9" fill="#FFFFFF" stroke="#FECACA" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="180" y="346" width="3" height="64" rx="1.5" fill="#F04438"/>
-            <text x="195" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="700" fill="#F0F4FF">Fondos</text>
-            <text x="195" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10" fill="rgba(240,244,255,0.5)">por rendir</text>
+            <text x="195" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="700" fill="#0F172A">Fondos</text>
+            <text x="195" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10" fill="#64748B">por rendir</text>
             <circle cx="276" cy="355" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="276" y="359" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
 
-          <line x1="160" y1="378" x2="178" y2="378" stroke="rgba(255,255,255,0.15)" stroke-width="1" marker-end="url(#arr)"/>
+          <line x1="160" y1="378" x2="178" y2="378" stroke="#CBD5E1" stroke-width="1" marker-end="url(#arr)"/>
 
           <!-- TRANSVERSAL -->
-          <rect x="330" y="292" width="540" height="178" rx="14" fill="rgba(122,90,248,0.04)" stroke="rgba(122,90,248,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
+          <rect x="330" y="292" width="540" height="178" rx="14" fill="rgba(122,90,248,0.03)" stroke="#DDD6FE" stroke-width="1.5" stroke-dasharray="6 3"/>
           <text x="350" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#7A5AF8" letter-spacing="1.5">ADMINISTRACIÓN · RRHH · LOGÍSTICA</text>
           <text x="350" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(122,90,248,0.5)">Áreas transversales · todas las unidades</text>
 
           <g class="node-process" onclick="openPanel('finanzas')">
-            <rect x="350" y="346" width="130" height="64" rx="9" fill="#0B1525" stroke="rgba(240,68,56,0.2)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="350" y="346" width="130" height="64" rx="9" fill="#FFFFFF" stroke="#FECACA" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="350" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="365" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Finanzas</text>
-            <text x="365" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y contabilidad</text>
+            <text x="365" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Finanzas</text>
+            <text x="365" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">y contabilidad</text>
             <circle cx="466" cy="355" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="466" y="359" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
 
           <g class="node-process" onclick="openPanel('rrhh')">
-            <rect x="500" y="346" width="130" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="500" y="346" width="130" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="500" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="515" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">RRHH</text>
-            <text x="515" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y técnicos</text>
+            <text x="515" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">RRHH</text>
+            <text x="515" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">y técnicos</text>
             <circle cx="616" cy="355" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
             <text x="616" y="359" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
           </g>
 
           <g class="node-process" onclick="openPanel('logistica-flota')">
-            <rect x="650" y="346" width="130" height="64" rx="9" fill="#0B1525" stroke="rgba(255,255,255,0.1)" stroke-width="1" filter="url(#glow-node)"/>
+            <rect x="650" y="346" width="130" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="650" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="665" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#F0F4FF">Logística</text>
-            <text x="665" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.5)">y flota</text>
+            <text x="665" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0F172A">Logística</text>
+            <text x="665" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#64748B">y flota</text>
             <circle cx="766" cy="355" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
             <text x="766" y="359" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
           </g>
 
           <!-- LEYENDA -->
-          <rect x="30" y="498" width="840" height="1" fill="rgba(255,255,255,0.06)"/>
+          <rect x="30" y="498" width="840" height="1" fill="#E2E8F0"/>
           <circle cx="50" cy="520" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
           <text x="50" y="524" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
-          <text x="62" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.35)">Dolor crítico</text>
+          <text x="62" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#94A3B8">Dolor crítico</text>
           <circle cx="158" cy="520" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
           <text x="158" y="524" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
-          <text x="170" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.35)">Oportunidad de mejora</text>
+          <text x="170" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#94A3B8">Oportunidad de mejora</text>
           <circle cx="310" cy="520" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
           <text x="310" y="524" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
-          <text x="322" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.35)">Potencial IA</text>
-          <text x="480" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="rgba(240,244,255,0.2)">Haz clic en cualquier proceso para ver el detalle →</text>
+          <text x="322" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#94A3B8">Potencial IA</text>
+          <text x="480" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#CBD5E1">Haz clic en cualquier proceso para ver el detalle →</text>
         </svg>
       </div>
 
