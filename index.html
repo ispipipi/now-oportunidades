@@ -52,8 +52,8 @@
 
 body {
   font-family:'Inter',system-ui,-apple-system,sans-serif;
-  font-size:15px;
-  line-height:1.65;
+  font-size:16px;
+  line-height:1.7;
   background:var(--bg);
   color:var(--text);
   min-height:100vh;
@@ -88,7 +88,7 @@ body {
   cursor:pointer; transition:all 0.15s;
   margin-bottom:2px;
   color:rgba(255,255,255,0.46);
-  font-size:13px; font-weight:500;
+  font-size:14px; font-weight:500;
   border:none; background:none;
   width:100%; text-align:left;
   font-family:'Inter',system-ui,sans-serif;
@@ -120,20 +120,20 @@ body {
 }
 .topbar-left { display:flex; align-items:center; gap:12px; }
 .topbar-title {
-  font-size:15px; font-weight:700;
-  color:var(--text); letter-spacing:-0.2px;
+  font-size:17px; font-weight:700;
+  color:var(--text); letter-spacing:-0.3px;
 }
 .topbar-badge {
-  font-size:10px; font-weight:600;
+  font-size:11px; font-weight:600;
   letter-spacing:0.08em; text-transform:uppercase;
-  padding:3px 10px; border-radius:20px;
+  padding:4px 12px; border-radius:20px;
   background:var(--accent-faint);
   color:var(--accent);
   border:1px solid rgba(27,180,216,0.2);
 }
 .topbar-meta {
-  font-size:12px; color:var(--text-muted);
-  background:var(--bg); padding:4px 12px;
+  font-size:13px; color:var(--text-muted);
+  background:var(--bg); padding:5px 14px;
   border-radius:20px; border:1px solid var(--border-card);
   font-weight:500;
 }
@@ -214,18 +214,18 @@ body {
   padding:3px 9px; border-radius:20px; margin-bottom:8px;
 }
 .panel-title {
-  font-size:17px; font-weight:800; color:var(--text);
-  letter-spacing:-0.3px; line-height:1.25;
+  font-size:20px; font-weight:800; color:var(--text);
+  letter-spacing:-0.4px; line-height:1.25;
   text-wrap:pretty;
 }
 .panel-desc {
-  font-size:13px; color:var(--text-muted);
+  font-size:14px; color:var(--text-muted);
   line-height:1.65; margin-top:5px;
 }
 .panel-body { padding:18px 22px; }
 .panel-section { margin-bottom:20px; }
 .panel-section-title {
-  font-size:10px; font-weight:600;
+  font-size:11px; font-weight:600;
   letter-spacing:0.12em; text-transform:uppercase;
   color:var(--text-muted); margin-bottom:9px;
   display:flex; align-items:center; gap:6px;
@@ -235,9 +235,9 @@ body {
 }
 .actor-list { display:flex; flex-wrap:wrap; gap:5px; }
 .actor-chip {
-  font-size:12px; font-weight:500;
+  font-size:13px; font-weight:500;
   background:var(--bg); color:var(--text-soft);
-  padding:4px 10px; border-radius:20px;
+  padding:5px 12px; border-radius:20px;
   border:1px solid var(--border-card);
 }
 .io-row { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
@@ -252,8 +252,8 @@ body {
 .io-box-label.in  { color:var(--accent); }
 .io-box-label.out { color:var(--green); }
 .io-item {
-  font-size:12px; color:var(--text-soft);
-  padding:3px 0; display:flex; align-items:flex-start;
+  font-size:13px; color:var(--text-soft);
+  padding:4px 0; display:flex; align-items:flex-start;
   gap:6px; line-height:1.5;
 }
 .io-dot { width:5px; height:5px; border-radius:50%; flex-shrink:0; margin-top:6px; }
@@ -275,9 +275,9 @@ body {
 .opp-chip-icon { font-size:13px; flex-shrink:0; margin-top:1px; }
 .opp-chip-text { font-size:12.5px; color:var(--text-soft); line-height:1.5; font-weight:500; }
 .opp-chip-tag {
-  display:inline-block; font-size:10px; font-weight:600;
+  display:inline-block; font-size:11px; font-weight:600;
   background:rgba(180,83,9,0.1); color:var(--yellow);
-  padding:2px 7px; border-radius:20px; margin-top:4px;
+  padding:3px 8px; border-radius:20px; margin-top:4px;
 }
 
 /* ══ OPPS VIEW ══ */
@@ -295,8 +295,8 @@ body {
 }
 .page-eyebrow::after { content:''; flex:1; height:1px; background:var(--border-card); }
 .page-title {
-  font-size:34px; font-weight:800; color:var(--text);
-  letter-spacing:-1.2px; margin-bottom:4px;
+  font-size:38px; font-weight:800; color:var(--text);
+  letter-spacing:-1.5px; margin-bottom:6px;
   text-wrap:pretty;
 }
 .page-desc { font-size:14px; color:var(--text-muted); line-height:1.6; }
@@ -370,7 +370,7 @@ body {
 .matrix-cell.q4 .matrix-cell-label { color:var(--yellow); }
 .matrix-chip {
   display:inline-flex; align-items:center; gap:5px;
-  font-size:11px; font-weight:600; color:var(--text-soft);
+  font-size:12px; font-weight:600; color:var(--text-soft);
   background:var(--card); border:1px solid var(--border-card);
   padding:4px 9px; border-radius:20px;
   cursor:grab; transition:all 0.18s;
@@ -428,9 +428,9 @@ body {
 }
 .opp-list-header {
   display:grid;
-  grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;
-  gap:12px; padding:11px 18px;
-  font-size:10px; font-weight:600;
+  grid-template-columns:36px 1fr 120px 100px 110px 90px 90px;
+  gap:12px; padding:13px 20px;
+  font-size:11px; font-weight:600;
   letter-spacing:0.12em; text-transform:uppercase;
   color:var(--text-muted);
   border-bottom:1px solid var(--border-card);
@@ -438,8 +438,8 @@ body {
 }
 .opp-list-row {
   display:grid;
-  grid-template-columns:36px 1fr 110px 90px 100px 80px 80px;
-  gap:12px; padding:13px 18px;
+  grid-template-columns:36px 1fr 120px 100px 110px 90px 90px;
+  gap:12px; padding:15px 20px;
   align-items:center; cursor:pointer;
   transition:background 0.15s;
   border-bottom:1px solid var(--border);
@@ -456,8 +456,8 @@ body {
 /* Pills semánticos HANDOFF */
 .pill {
   display:inline-flex; align-items:center;
-  font-size:11px; font-weight:600;
-  padding:3px 9px; border-radius:20px; white-space:nowrap;
+  font-size:12px; font-weight:600;
+  padding:4px 10px; border-radius:20px; white-space:nowrap;
 }
 .pill.high-impact { background:rgba(13,159,90,0.1);  color:var(--green); border:1px solid rgba(13,159,90,0.2); }
 .pill.med-impact  { background:rgba(180,83,9,0.1);   color:var(--yellow); border:1px solid rgba(180,83,9,0.2); }
@@ -470,8 +470,8 @@ body {
 .row-actions { display:flex; gap:5px; }
 .row-btn {
   background:none; border:1px solid var(--border-card);
-  color:var(--text-muted); font-size:11px; font-weight:500;
-  padding:4px 9px; border-radius:6px;
+  color:var(--text-muted); font-size:12px; font-weight:500;
+  padding:5px 10px; border-radius:6px;
   cursor:pointer; font-family:'Inter',system-ui,sans-serif;
   transition:all 0.15s;
 }
@@ -515,8 +515,8 @@ body {
   flex-shrink:0; margin-top:2px;
 }
 .modal-title {
-  font-size:20px; font-weight:800; color:var(--text);
-  letter-spacing:-0.4px; line-height:1.2; text-wrap:pretty;
+  font-size:24px; font-weight:800; color:var(--text);
+  letter-spacing:-0.5px; line-height:1.2; text-wrap:pretty;
 }
 .modal-unit { font-size:12px; color:var(--text-muted); margin-top:3px; font-weight:500; }
 .modal-close {
@@ -552,8 +552,8 @@ body {
 .modal-desc { font-size:14px; color:var(--text-soft); line-height:1.7; }
 .modal-bullets { list-style:none; }
 .modal-bullets li {
-  font-size:13.5px; color:var(--text-soft);
-  padding:8px 0; border-bottom:1px solid var(--border);
+  font-size:14px; color:var(--text-soft);
+  padding:9px 0; border-bottom:1px solid var(--border);
   display:flex; align-items:flex-start; gap:8px; line-height:1.5;
 }
 .modal-bullets li:last-child { border-bottom:none; }
@@ -563,9 +563,9 @@ body {
 }
 .tech-tags { display:flex; flex-wrap:wrap; gap:7px; }
 .tech-tag {
-  font-size:12px; font-weight:500;
+  font-size:13px; font-weight:500;
   background:var(--accent-faint); color:#0E8DAA;
-  padding:5px 12px; border-radius:20px;
+  padding:5px 14px; border-radius:20px;
   border:1px solid rgba(27,180,216,0.25);
 }
 .modal-footer {
@@ -713,14 +713,14 @@ body {
 
           <!-- ULTIMA MILLA -->
           <rect x="30" y="30" width="390" height="230" rx="14" fill="rgba(0,196,106,0.03)" stroke="rgba(0,196,106,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
-          <text x="50" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#00C46A" letter-spacing="1.5">ÚLTIMA MILLA</text>
-          <text x="50" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(0,196,106,0.5)">Claro · WOM · 130 técnicos</text>
+          <text x="50" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="700" fill="#00C46A" letter-spacing="1.5">ÚLTIMA MILLA</text>
+          <text x="50" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="rgba(0,196,106,0.5)">Claro · WOM · 130 técnicos</text>
 
           <g class="node-process" onclick="openPanel('recepcion-ordenes')">
             <rect x="50" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="50" y="84" width="3" height="64" rx="1.5" fill="#00C46A"/>
-            <text x="65" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Recepción</text>
-            <text x="65" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">de órdenes</text>
+            <text x="65" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Recepción</text>
+            <text x="65" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">de órdenes</text>
             <circle cx="184" cy="93" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
             <text x="184" y="97" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
           </g>
@@ -728,8 +728,8 @@ body {
           <g class="node-process" onclick="openPanel('ejecucion-terreno')">
             <rect x="220" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="220" y="84" width="3" height="64" rx="1.5" fill="#00C46A"/>
-            <text x="235" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Ejecución</text>
-            <text x="235" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">en terreno</text>
+            <text x="235" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Ejecución</text>
+            <text x="235" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">en terreno</text>
             <circle cx="354" cy="93" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="354" y="97" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
@@ -737,8 +737,8 @@ body {
           <g class="node-process" onclick="openPanel('control-alertas')">
             <rect x="50" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#FECACA" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="50" y="174" width="3" height="64" rx="1.5" fill="#F04438"/>
-            <text x="65" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Control de</text>
-            <text x="65" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">alertas DPN</text>
+            <text x="65" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Control de</text>
+            <text x="65" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">alertas DPN</text>
             <circle cx="184" cy="183" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="184" y="187" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
@@ -746,8 +746,8 @@ body {
           <g class="node-process" onclick="openPanel('rendimiento-tecnico')">
             <rect x="220" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="220" y="174" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="235" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Rendimiento</text>
-            <text x="235" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">por técnico</text>
+            <text x="235" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Rendimiento</text>
+            <text x="235" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">por técnico</text>
             <circle cx="354" cy="183" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
             <text x="354" y="187" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
           </g>
@@ -758,21 +758,21 @@ body {
 
           <!-- RETIRO -->
           <rect x="450" y="30" width="420" height="230" rx="14" fill="rgba(46,144,250,0.03)" stroke="rgba(46,144,250,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
-          <text x="470" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#2E90FA" letter-spacing="1.5">RETIRO / LOGÍSTICA INVERSA</text>
-          <text x="470" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(46,144,250,0.5)">Verisur · Movistar · Claro · BTR · Prosegur · ADT</text>
+          <text x="470" y="55" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="700" fill="#2E90FA" letter-spacing="1.5">RETIRO / LOGÍSTICA INVERSA</text>
+          <text x="470" y="71" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="rgba(46,144,250,0.5)">Verisur · Movistar · Claro · BTR · Prosegur · ADT</text>
 
           <g class="node-process" onclick="openPanel('recepcion-retiro')">
             <rect x="470" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="470" y="84" width="3" height="64" rx="1.5" fill="#2E90FA"/>
-            <text x="485" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Recepción</text>
-            <text x="485" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">listado retiros</text>
+            <text x="485" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Recepción</text>
+            <text x="485" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">listado retiros</text>
           </g>
 
           <g class="node-process" onclick="openPanel('ejecucion-retiro')">
             <rect x="640" y="84" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="640" y="84" width="3" height="64" rx="1.5" fill="#2E90FA"/>
-            <text x="655" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Ejecución</text>
-            <text x="655" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">y trazabilidad</text>
+            <text x="655" y="107" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Ejecución</text>
+            <text x="655" y="124" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">y trazabilidad</text>
             <circle cx="774" cy="93" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="774" y="97" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
@@ -780,8 +780,8 @@ body {
           <g class="node-process" onclick="openPanel('control-series')">
             <rect x="470" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#FECACA" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="470" y="174" width="3" height="64" rx="1.5" fill="#F04438"/>
-            <text x="485" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Control de</text>
-            <text x="485" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">series / stock</text>
+            <text x="485" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Control de</text>
+            <text x="485" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">series / stock</text>
             <circle cx="604" cy="183" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="604" y="187" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
@@ -789,8 +789,8 @@ body {
           <g class="node-process" onclick="openPanel('optimizacion-rutas')">
             <rect x="640" y="174" width="148" height="64" rx="9" fill="#FFFFFF" stroke="#DDD6FE" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="640" y="174" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="655" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Optimización</text>
-            <text x="655" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">de rutas</text>
+            <text x="655" y="197" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Optimización</text>
+            <text x="655" y="214" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">de rutas</text>
             <circle cx="774" cy="183" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
             <text x="774" y="187" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
           </g>
@@ -801,14 +801,14 @@ body {
 
           <!-- TORRES -->
           <rect x="30" y="292" width="280" height="178" rx="14" fill="rgba(247,144,9,0.03)" stroke="rgba(247,144,9,0.2)" stroke-width="1.5" stroke-dasharray="6 3"/>
-          <text x="50" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#F79009" letter-spacing="1.5">TORRES</text>
-          <text x="50" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(247,144,9,0.5)">Construcción sitios telco</text>
+          <text x="50" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="700" fill="#F79009" letter-spacing="1.5">TORRES</text>
+          <text x="50" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="rgba(247,144,9,0.5)">Construcción sitios telco</text>
 
           <g class="node-process" onclick="openPanel('gestion-hitos')">
             <rect x="50" y="346" width="110" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="50" y="346" width="3" height="64" rx="1.5" fill="#F79009"/>
-            <text x="65" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Gestión</text>
-            <text x="65" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">de hitos</text>
+            <text x="65" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Gestión</text>
+            <text x="65" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">de hitos</text>
           </g>
 
           <g class="node-process" onclick="openPanel('fondos-rendir')">
@@ -824,14 +824,14 @@ body {
 
           <!-- TRANSVERSAL -->
           <rect x="330" y="292" width="540" height="178" rx="14" fill="rgba(122,90,248,0.03)" stroke="#DDD6FE" stroke-width="1.5" stroke-dasharray="6 3"/>
-          <text x="350" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="10" font-weight="700" fill="#7A5AF8" letter-spacing="1.5">ADMINISTRACIÓN · RRHH · LOGÍSTICA</text>
-          <text x="350" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="9.5" fill="rgba(122,90,248,0.5)">Áreas transversales · todas las unidades</text>
+          <text x="350" y="317" font-family="-apple-system,system-ui,sans-serif" font-size="11" font-weight="700" fill="#7A5AF8" letter-spacing="1.5">ADMINISTRACIÓN · RRHH · LOGÍSTICA</text>
+          <text x="350" y="333" font-family="-apple-system,system-ui,sans-serif" font-size="11" fill="rgba(122,90,248,0.5)">Áreas transversales · todas las unidades</text>
 
           <g class="node-process" onclick="openPanel('finanzas')">
             <rect x="350" y="346" width="130" height="64" rx="9" fill="#FFFFFF" stroke="#FECACA" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="350" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="365" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Finanzas</text>
-            <text x="365" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">y contabilidad</text>
+            <text x="365" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Finanzas</text>
+            <text x="365" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">y contabilidad</text>
             <circle cx="466" cy="355" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
             <text x="466" y="359" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
           </g>
@@ -839,8 +839,8 @@ body {
           <g class="node-process" onclick="openPanel('rrhh')">
             <rect x="500" y="346" width="130" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="500" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="515" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">RRHH</text>
-            <text x="515" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">y técnicos</text>
+            <text x="515" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">RRHH</text>
+            <text x="515" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">y técnicos</text>
             <circle cx="616" cy="355" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
             <text x="616" y="359" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
           </g>
@@ -848,8 +848,8 @@ body {
           <g class="node-process" onclick="openPanel('logistica-flota')">
             <rect x="650" y="346" width="130" height="64" rx="9" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1" filter="url(#glow-node)"/>
             <rect x="650" y="346" width="3" height="64" rx="1.5" fill="#7A5AF8"/>
-            <text x="665" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="12" font-weight="700" fill="#0D1E33">Logística</text>
-            <text x="665" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#61758A">y flota</text>
+            <text x="665" y="369" font-family="-apple-system,system-ui,sans-serif" font-size="14" font-weight="700" fill="#0D1E33">Logística</text>
+            <text x="665" y="386" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#61758A">y flota</text>
             <circle cx="766" cy="355" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
             <text x="766" y="359" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
           </g>
@@ -858,14 +858,14 @@ body {
           <rect x="30" y="498" width="840" height="1" fill="#E2E8F0"/>
           <circle cx="50" cy="520" r="6" fill="rgba(240,68,56,0.15)" stroke="rgba(240,68,56,0.4)" stroke-width="1"/>
           <text x="50" y="524" text-anchor="middle" font-size="9" font-weight="700" fill="#F04438">!</text>
-          <text x="62" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#94A3B8">Dolor crítico</text>
+          <text x="62" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#94A3B8">Dolor crítico</text>
           <circle cx="158" cy="520" r="6" fill="rgba(247,144,9,0.15)" stroke="rgba(247,144,9,0.4)" stroke-width="1"/>
           <text x="158" y="524" text-anchor="middle" font-size="8" fill="#F79009">⚡</text>
-          <text x="170" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#94A3B8">Oportunidad de mejora</text>
+          <text x="170" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#94A3B8">Oportunidad de mejora</text>
           <circle cx="310" cy="520" r="6" fill="rgba(122,90,248,0.15)" stroke="rgba(122,90,248,0.4)" stroke-width="1"/>
           <text x="310" y="524" text-anchor="middle" font-size="8" fill="#7A5AF8">★</text>
-          <text x="322" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#94A3B8">Potencial IA</text>
-          <text x="480" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="10.5" fill="#94A3B8">Haz clic en cualquier proceso para ver el detalle →</text>
+          <text x="322" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#94A3B8">Potencial IA</text>
+          <text x="480" y="524" font-family="-apple-system,system-ui,sans-serif" font-size="12" fill="#94A3B8">Haz clic en cualquier proceso para ver el detalle →</text>
         </svg>
       </div>
 
@@ -979,11 +979,11 @@ body {
 
 <script>
 
-const PROCESSES = {'recepcion-ordenes':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Recepción de órdenes',desc:'Ingreso y distribución de órdenes de trabajo desde los sistemas de Claro y WOM hacia los técnicos disponibles.',actors:['Operador de turno','Sistema mandante (Claro/WOM)','Supervisor de zona'],inputs:['Listado de órdenes diarias','Disponibilidad de técnicos','Mapa de zonas'],outputs:['Órdenes asignadas por técnico','Ruta estimada del día','Confirmación al mandante'],opps:[{text:'Asignación automática por algoritmo de proximidad y carga de trabajo',tag:'Automatización',ref:5},{text:'Notificación push al técnico con contexto completo de la orden',tag:'Quick win',ref:1}]},'ejecucion-terreno':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Ejecución en terreno',desc:'El técnico realiza la instalación o reparación en el domicilio del cliente final y registra el resultado.',actors:['Técnico de campo','Cliente final','Supervisor (remoto)'],inputs:['Orden de trabajo asignada','Equipos y materiales','Instrucciones del mandante'],outputs:['Actividad cerrada en sistema','Evidencia fotográfica','Equipos retirados si aplica'],opps:[{text:'Detección automática de inactividad prolongada o discrepancia GPS vs sistema',tag:'IA detección',ref:7},{text:'KPI individual: tiempo promedio, tasa de cierre, multas generadas',tag:'Analytics',ref:4}]},'control-alertas':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Control de alertas DPN',desc:'Gestión de alertas de desconexión que generan multas si no se atienden dentro del SLA del mandante.',actors:['Operador de alertas','Sistema DPN externo ($800K/mes)','Técnico de campo'],inputs:['Alerta de desconexión','Estado del técnico más cercano','Ventana de tiempo SLA'],outputs:['Técnico despachado','Alerta gestionada','Registro de multa si aplica'],opps:[{text:'Reemplazar sistema externo ($800K/mes) con solución propia integrada a APIs mandantes',tag:'💰 Ahorro directo',ref:1},{text:'Disparo automático + asignación al técnico más cercano antes del vencimiento SLA',tag:'Automatización crítica',ref:1}]},'rendimiento-tecnico':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Rendimiento por técnico',desc:'Seguimiento del desempeño individual de cada técnico en producción, calidad y costos asociados.',actors:['Supervisor de zona','Gerencia operacional','RR.HH.'],inputs:['Actividades cerradas','Costo de flota asociado','Multas generadas'],outputs:['Ranking de rendimiento','Alertas de bajo desempeño','Datos para decisiones RRHH'],opps:[{text:'Cruce automático GPS + actividad + costo flota para perfil 360° de cada técnico',tag:'IA correlación',ref:4},{text:'Dashboard de ranking actualizado diariamente sin intervención manual',tag:'Automatización',ref:4}]},'recepcion-retiro':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Recepción de listado de retiros',desc:'Ingreso del listado de equipos a retirar o entregar desde los sistemas de cada mandante.',actors:['Coordinador logístico','Sistema mandante (SAP)','Bodeguero central'],inputs:['Listado de retiros del mandante','Series a recuperar','Direcciones de clientes'],outputs:['Órdenes de retiro creadas','Técnicos asignados por zona','Confirmación al mandante'],opps:[{text:'Integración directa SAP → sistema propio para eliminar carga manual',tag:'Integración',ref:6}]},'ejecucion-retiro':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Ejecución y trazabilidad',desc:'El técnico ejecuta el retiro o entrega y registra la serie del equipo en tiempo real.',actors:['Técnico de campo','Cliente final','Bodeguero receptor'],inputs:['Orden de retiro','Equipo con número de serie','Instrucciones del mandante'],outputs:['Serie registrada','Equipo en tránsito a bodega','Confirmación de retiro'],opps:[{text:'Registro de series por QR/código de barras desde móvil',tag:'Quick win',ref:6},{text:'Trazabilidad en tiempo real: registrada → en tránsito → recibida en bodega',tag:'Trazabilidad',ref:6}]},'control-series':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Control de series y stock',desc:'Reconciliación entre lo declarado por el mandante, lo retirado en terreno y lo recibido en bodega.',actors:['Bodeguero central','Coordinador logístico','Sistema mandante (SAP)'],inputs:['Listado de series del mandante','Series registradas en terreno','Recepción física en bodega'],outputs:['Informe de discrepancias','Stock actualizado','Reclamos al mandante si aplica'],opps:[{text:'Detección automática de discrepancias SAP vs bodega con alerta a coordinador',tag:'Automatización crítica',ref:6},{text:'Alerta por serie sin movimiento por más de 60 días',tag:'IA anomalía',ref:6}]},'optimizacion-rutas':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Optimización de rutas',desc:'Agrupación y secuenciación de órdenes para maximizar visitas por técnico por día.',actors:['Coordinador logístico','Técnico de campo','Sistema GPS'],inputs:['Listado de órdenes del día','Posición inicial de cada técnico','Estimación de duración por visita'],outputs:['Ruta óptima por técnico','Estimación de horarios','Cantidad de visitas proyectadas'],opps:[{text:'Modelo predictivo que aprende de datos históricos para asignar rutas óptimas',tag:'IA predictiva',ref:5}]},'gestion-hitos':{unit:'Torres',unitColor:'#F59E0B',unitBg:'#FFFBEB',title:'Gestión de hitos',desc:'Control del avance de construcción de sitios telco por hitos contractuales con el mandante.',actors:['Jefe de brigada','Gerente de proyecto','Mandante telco'],inputs:['Contrato con hitos definidos','Avance físico reportado','Validación del mandante'],outputs:['Hito aprobado y facturado','Informe de avance','Alertas de retraso'],opps:[{text:'Dashboard de avance por sitio y brigada — reemplaza control manual en Excel',tag:'Quick win',ref:3}]},'fondos-rendir':{unit:'Torres',unitColor:'#F59E0B',unitBg:'#FFFBEB',title:'Fondos por rendir',desc:'Gestión del flujo de caja entregado a brigadas para gastos en terreno — $3MM semanales sin trazabilidad.',actors:['Jefe de brigada','Administración central','Contador externo'],inputs:['Fondos transferidos a brigada','Boletas y facturas de gastos','Solicitudes de reposición'],outputs:['Rendición aprobada','Saldo actualizado por brigada','Informe de gastos'],opps:[{text:'Sistema de crédito rodante: foto de boleta → OCR → aprobación automática o escalada',tag:'💰 Control $3MM/sem',ref:3},{text:'Saldo disponible en tiempo real por brigada y proyecto',tag:'Automatización',ref:3}]},'finanzas':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'Finanzas y contabilidad',desc:'Gestión contable de dos empresas legales (NDX y NOW) con contador externo y sistemas separados.',actors:['Contador externo','Gerencia general','Administración'],inputs:['Movimientos Nubox NDX','Movimientos Nubox NOW','Fondos por rendir rendidos'],outputs:['Estados financieros','Declaraciones tributarias','Ratios de gestión'],opps:[{text:'Dashboard financiero en tiempo real: ratios gasto/técnico, gasto/flota vs presupuesto',tag:'💰 Visibilidad crítica',ref:2},{text:'Integración Nubox → sistema propio para eliminar rezago contable',tag:'Integración',ref:2}]},'rrhh':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'RRHH y técnicos',desc:'Gestión de contratos, horarios y certificaciones de 130+ técnicos distribuidos a nivel nacional.',actors:['Encargada de RRHH','Supervisores de zona','Técnicos'],inputs:['Contratos de trabajo','Turnos y horarios (Redmax)','Certificaciones y cursos'],outputs:['Pago de remuneraciones','Registro de asistencia','Control de habilitaciones'],opps:[{text:'HUB central de técnicos: historial, certificaciones y alertas de vencimiento automáticas',tag:'Plataforma',ref:8},{text:'Vinculación historial técnico ↔ rendimiento operacional',tag:'Analytics',ref:4}]},'logistica-flota':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'Logística y flota',desc:'Gestión de 5 bodegas (4 norte + Santiago), vehículos, combustible y seguros de la flota propia.',actors:['Encargada de flota (Camila)','Bodegueros','Supervisores de zona'],inputs:['Posición GPS en tiempo real','Consumo de combustible','Estado de mantenciones'],outputs:['Asignación de vehículos','Alertas de mantención','Costos de operación por vehículo'],opps:[{text:'KPI de costo por vehículo cruzado con técnico asignado',tag:'Analytics',ref:4},{text:'Alertas automáticas de mantención predictiva por kilometraje o tiempo',tag:'Automatización',ref:4}]}};
+const PROCESSES = {'recepcion-ordenes':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Recepción de órdenes',desc:'Ingreso y distribución de órdenes de trabajo desde los sistemas de Claro y WOM hacia los técnicos disponibles.',actors:['Operador de turno','Sistema mandante (Claro/WOM)','Supervisor de zona'],inputs:['Listado de órdenes diarias','Disponibilidad de técnicos','Mapa de zonas'],outputs:['Órdenes asignadas por técnico','Ruta estimada del día','Confirmación al mandante'],opps:[{text:'Asignación automática por algoritmo de proximidad y carga de trabajo',tag:'Automatización',ref:5},{text:'Notificación push al técnico con contexto completo de la orden',tag:'Quick win',ref:1}]},'ejecucion-terreno':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Ejecución en terreno',desc:'El técnico realiza la instalación o reparación en el domicilio del cliente final y registra el resultado.',actors:['Técnico de campo','Cliente final','Supervisor (remoto)'],inputs:['Orden de trabajo asignada','Equipos y materiales','Instrucciones del mandante'],outputs:['Actividad cerrada en sistema','Evidencia fotográfica','Equipos retirados si aplica'],opps:[{text:'Detección automática de inactividad prolongada o discrepancia GPS vs sistema',tag:'IA detección',ref:7},{text:'KPI individual: tiempo promedio, tasa de cierre, multas generadas',tag:'Analytics',ref:4}]},'control-alertas':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Control de alertas DPN',desc:'Gestión de alertas de desconexión que generan multas si no se atienden dentro del SLA del mandante.',actors:['Operador de alertas','Sistema DPN externo ($800K/mes)','Técnico de campo'],inputs:['Alerta de desconexión','Estado del técnico más cercano','Ventana de tiempo SLA'],outputs:['Técnico despachado','Alerta gestionada','Registro de multa si aplica'],opps:[{text:'Reemplazar sistema externo ($800K/mes) con solución propia integrada a APIs mandantes',tag:'💰 Ahorro directo',ref:1},{text:'Disparo automático + asignación al técnico más cercano antes del vencimiento SLA',tag:'Automatización crítica',ref:1}]},'rendimiento-tecnico':{unit:'Última milla',unitColor:'#00C46A',unitBg:'#E8FBF2',title:'Rendimiento por técnico',desc:'Seguimiento del desempeño individual de cada técnico en producción, calidad y costos asociados.',actors:['Supervisor de zona','Gerencia operacional','RR.HH.'],inputs:['Actividades cerradas','Costo de flota asociado','Multas generadas'],outputs:['Ranking de rendimiento','Alertas de bajo desempeño','Datos para decisiones RRHH'],opps:[{text:'Cruce automático GPS + actividad + costo flota para perfil 360° de cada técnico',tag:'IA correlación',ref:4},{text:'Dashboard de ranking actualizado diariamente sin intervención manual',tag:'Automatización',ref:4}]},'recepcion-retiro':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Recepción de listado de retiros',desc:'Ingreso del listado de equipos a retirar o entregar desde los sistemas de cada mandante.',actors:['Coordinador logístico','Sistema mandante (SAP)','Bodeguero central'],inputs:['Listado de retiros del mandante','Series a recuperar','Direcciones de clientes'],outputs:['Órdenes de retiro creadas','Técnicos asignados por zona','Confirmación al mandante'],opps:[{text:'Integración directa SAP → sistema propio para eliminar carga manual',tag:'Integración',ref:6}]},'ejecucion-retiro':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Ejecución y trazabilidad',desc:'El técnico ejecuta el retiro o entrega y registra la serie del equipo en tiempo real.',actors:['Técnico de campo','Cliente final','Bodeguero receptor'],inputs:['Orden de retiro','Equipo con número de serie','Instrucciones del mandante'],outputs:['Serie registrada','Equipo en tránsito a bodega','Confirmación de retiro'],opps:[{text:'Registro de series por QR/código de barras desde móvil',tag:'Quick win',ref:6},{text:'Trazabilidad en tiempo real: registrada → en tránsito → recibida en bodega',tag:'Trazabilidad',ref:6}]},'control-series':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Control de series y stock',desc:'Reconciliación entre lo declarado por el mandante, lo retirado en terreno y lo recibido en bodega.',actors:['Bodeguero central','Coordinador logístico','Sistema mandante (SAP)'],inputs:['Listado de series del mandante','Series registradas en terreno','Recepción física en bodega'],outputs:['Informe de discrepancias','Stock actualizado','Reclamos al mandante si aplica'],opps:[{text:'Detección automática de discrepancias SAP vs bodega con alerta a coordinador',tag:'Automatización crítica',ref:6},{text:'Alerta por serie sin movimiento por más de 60 días',tag:'IA anomalía',ref:6}]},'optimizacion-rutas':{unit:'Retiro / Logística inversa',unitColor:'#3B82F6',unitBg:'#EFF6FF',title:'Optimización de rutas',desc:'Agrupación y secuenciación de órdenes para maximizar visitas por técnico por día.',actors:['Coordinador logístico','Técnico de campo','Sistema GPS'],inputs:['Listado de órdenes del día','Posición inicial de cada técnico','Estimación de duración por visita'],outputs:['Ruta óptima por técnico','Estimación de horarios','Cantidad de visitas proyectadas'],opps:[{text:'Modelo predictivo que aprende de datos históricos para asignar rutas óptimas',tag:'IA predictiva',ref:5}]},'gestion-hitos':{unit:'Torres',unitColor:'#F59E0B',unitBg:'#FFFBEB',title:'Gestión de hitos',desc:'Control del avance de construcción de sitios telco por hitos contractuales con el mandante.',actors:['Jefe de brigada','Gerente de proyecto','Mandante telco'],inputs:['Contrato con hitos definidos','Avance físico reportado','Validación del mandante'],outputs:['Hito aprobado y facturado','Informe de avance','Alertas de retraso'],opps:[{text:'Dashboard de avance por sitio y brigada — reemplaza control manual en Excel',tag:'Quick win',ref:3}]},'fondos-rendir':{unit:'Torres',unitColor:'#F59E0B',unitBg:'#FFFBEB',title:'Fondos por rendir',desc:'Gestión del flujo de caja entregado a brigadas para gastos en terreno — $3MM semanales sin trazabilidad.',actors:['Jefe de brigada','Administración central','Contador externo'],inputs:['Fondos transferidos a brigada','Boletas y facturas de gastos','Solicitudes de reposición'],outputs:['Rendición aprobada','Saldo actualizado por brigada','Informe de gastos'],opps:[{text:'Sistema de crédito rodante: foto de boleta → OCR → aprobación automática o escalada',tag:'💰 Control $3MM/sem',ref:3},{text:'Saldo disponible en tiempo real por brigada y proyecto',tag:'Automatización',ref:3}]},'finanzas':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'Finanzas y contabilidad',desc:'Gestión contable de dos empresas legales (NDX y NOW) con contador externo y sistemas separados.',actors:['Contador externo','Gerencia general','Administración'],inputs:['Movimientos Nubox NDX','Movimientos Nubox NOW','Fondos por rendir rendidos'],outputs:['Estados financieros','Declaraciones tributarias','Ratios de gestión'],opps:[{text:'Dashboard financiero en tiempo real: ratios gasto/técnico, gasto/flota vs presupuesto',tag:'💰 Visibilidad crítica',ref:2},{text:'Integración Nubox → sistema propio para eliminar rezago contable',tag:'Integración',ref:2}]},'rrhh':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'RRHH y técnicos',desc:'Gestión de contratos, horarios y certificaciones de 130+ técnicos distribuidos a nivel nacional.',actors:['Encargada de RRHH','Supervisores de zona','Técnicos'],inputs:['Contratos de trabajo','Turnos y horarios (REX+)','Certificaciones y cursos'],outputs:['Pago de remuneraciones','Registro de asistencia','Control de habilitaciones'],opps:[{text:'HUB central de técnicos: historial, certificaciones y alertas de vencimiento automáticas',tag:'Plataforma',ref:8},{text:'Vinculación historial técnico ↔ rendimiento operacional',tag:'Analytics',ref:4}]},'logistica-flota':{unit:'Transversal',unitColor:'#8B5CF6',unitBg:'#F5F3FF',title:'Logística y flota',desc:'Gestión de 5 bodegas (4 norte + Santiago), vehículos, combustible y seguros de la flota propia.',actors:['Encargada de flota (Camila)','Bodegueros','Supervisores de zona'],inputs:['Posición GPS en tiempo real','Consumo de combustible','Estado de mantenciones'],outputs:['Asignación de vehículos','Alertas de mantención','Costos de operación por vehículo'],opps:[{text:'KPI de costo por vehículo cruzado con técnico asignado',tag:'Analytics',ref:4},{text:'Alertas automáticas de mantención predictiva por kilometraje o tiempo',tag:'Automatización',ref:4}]}};
 
 const OPPS=[{id:1,name:'Sistema propio de alertas DPN',unit:'Última milla',unitColor:'#00C46A',impact:'Alto',diff:'Baja',time:'6–8 sem',color:'#EF4444'},{id:2,name:'Dashboard financiero en tiempo real',unit:'Transversal',unitColor:'#8B5CF6',impact:'Alto',diff:'Baja',time:'8–10 sem',color:'#F59E0B'},{id:3,name:'Gestión inteligente de fondos por rendir',unit:'Torres',unitColor:'#F59E0B',impact:'Alto',diff:'Baja',time:'4–6 sem',color:'#00C46A'},{id:4,name:'Módulo de rendimiento por persona y flota',unit:'Todas',unitColor:'#64748B',impact:'Alto',diff:'Media',time:'10–12 sem',color:'#64748B'},{id:5,name:'Optimización inteligente de rutas',unit:'Retiro · Última milla',unitColor:'#3B82F6',impact:'Alto',diff:'Alta',time:'16–20 sem',color:'#8B5CF6'},{id:6,name:'Control de stock y trazabilidad de series',unit:'Retiro · Remoz.',unitColor:'#3B82F6',impact:'Alto',diff:'Media',time:'8–10 sem',color:'#3B82F6'},{id:7,name:'Monitoreo con detección de irregularidades',unit:'Última milla',unitColor:'#00C46A',impact:'Medio',diff:'Alta',time:'14–18 sem',color:'#EF4444'},{id:8,name:'Plataforma centralizada de técnicos',unit:'Transversal',unitColor:'#8B5CF6',impact:'Medio',diff:'Baja',time:'6–8 sem',color:'#8B5CF6'}];
 
-const OPP_DETAIL={1:{desc:'Hoy NOW paga $800.000 mensuales a un tercero por un sistema deficiente. Cada alerta no gestionada genera multas de $4–5MM semanales. Una solución propia elimina ese costo y reduce las multas.',resolves:['Elimina pago mensual de $800K a tercero','Captura alertas DPN en tiempo real desde APIs mandantes','Dispara acción automática antes del vencimiento del SLA','Registra historial de gestión por alerta y técnico'],how:'Módulo propio integrado con APIs de Claro y WOM. Calcula tiempo disponible antes del SLA, asigna automáticamente al técnico más cercano y escala al supervisor si no hay respuesta.',tech:['React','Firebase','API Claro/WOM','Alertas push','Dashboard tiempo real']},2:{desc:'La empresa mira los estados financieros del año pasado recién hoy. Los ratios de gasto son completamente desconocidos, impidiendo decisiones de gestión con datos reales.',resolves:['Visibilidad financiera en tiempo real','Ratios gasto/técnico y gasto/flota automáticos','Alertas cuando un ratio supera el presupuesto','Elimina rezago contable de meses'],how:'Conectamos Nubox (×2), Odoo y sistema de flota en un dashboard centralizado. Proceso nocturno sincroniza movimientos y genera KPIs diarios.',tech:['React','Firebase','Integración Nubox','Integración Odoo','Automatización nocturna']},3:{desc:'Brigadas de Torres manejan $3MM semanales en fondos por rendir sin trazabilidad. El proceso es manual y genera discrepancias contables frecuentes.',resolves:['Control de $3MM/sem en fondos de Torres','Ciclo de rendición cerrado y trazable','Saldo disponible en tiempo real por brigada','Eliminación de discrepancias contables'],how:'Sistema de crédito rodante: jefe de brigada fotografía la boleta, OCR extrae datos, el sistema aprueba automáticamente o escala para revisión.',tech:['React','Firebase','OCR de boletas','Notificaciones móvil','Panel de aprobación']},4:{desc:'Con 130+ técnicos y múltiples vehículos no existe ningún KPI individual. Es imposible saber quién produce más o qué camioneta genera más costo.',resolves:['KPIs individuales: actividades, tiempo promedio, multas generadas','Costo por vehículo vs técnico asignado','Ranking automático actualizado diariamente','Alertas de correlaciones negativas'],how:'Cruzamos datos de actividad del mandante, GPS y costos de mantención para perfil 360° por técnico. Motor de cálculo nocturno produce rankings y detecta correlaciones.',tech:['React','Firebase','Integración GPS','Analytics','Motor de correlación']},5:{desc:'Las rutas se asignan manualmente. Con 130 técnicos nacionales y miles de órdenes mensuales hay enorme potencial de optimización.',resolves:['Agrupación geográfica automática de órdenes','Estimación de tiempo por tipo de actividad','Propuesta de ruta óptima al inicio de jornada','El supervisor puede ajustar antes de confirmar'],how:'Modelo que ingiere órdenes del día, clusteriza por proximidad y estima tiempos según historial. En fase 2, el modelo aprende y mejora predicciones.',tech:['Python','Algoritmo de rutas','React','Firebase','Modelo ML']},6:{desc:'El control de series es 100% manual. Los reingresos se cuentan como nuevos equipos y el remozamiento opera sin visibilidad de repuestos.',resolves:['Registro de cada movimiento de una serie','Detección de discrepancias vs SAP mandante','Alertas de series sin movimiento por más de 60 días','Control de stock de repuestos en remozamiento'],how:'Módulo de trazabilidad que registra cada movimiento. Detecta anomalías automáticamente y las escala. Para remozamiento, agrega control de repuestos.',tech:['React','Firebase','Integración SAP','Alertas automáticas','Control de stock']},7:{desc:'Sin monitoreo inteligente un técnico puede estar inactivo 3 horas sin que nadie lo note. El GPS está desconectado del sistema de actividad del mandante.',resolves:['Detección de inactividad prolongada con alerta supervisor','Cruce GPS vs actividad reportada en tiempo real','Categorización automática: leve, moderada, crítica','Contexto completo al supervisor para actuar'],how:'Integración GPS con sistema de actividad del mandante. Motor de reglas detecta anomalías y las categoriza. En fase 2, IA aprende patrones y reduce falsos positivos.',tech:['React','Firebase','Integración GPS','Motor de reglas','IA detección']},8:{desc:'El historial de 130+ técnicos está disperso entre Redmax, Excel y correo. Las certificaciones vencen sin alerta automática.',resolves:['Perfil centralizado: historial, contratos, certificaciones','Alertas de vencimiento a 15 y 5 días','Vinculación con módulo de rendimiento para perfil 360°','Acceso del técnico a su perfil desde móvil'],how:'HUB digital del técnico accesible desde cualquier dispositivo. Alertas automáticas de vencimiento. El técnico puede ver y descargar sus documentos.',tech:['React','Firebase','Notificaciones push','Mobile-first','Integración Redmax']}};
+const OPP_DETAIL={1:{desc:'NOW paga $800K mensuales a una empresa externa por un sistema que el propio equipo interno califica como deficiente — y todos piden reemplazar. Cada alerta de desconexión no gestionada a tiempo genera multas de $4–5MM semanales. A esto se suma que BTR ya descuenta media hora de pago si el técnico termina antes del horario pactado, lo que exige control de horario en tiempo real además de las alertas.',resolves:['Elimina pago mensual de $800K a empresa externa','Captura alertas DPN en tiempo real desde APIs mandantes','Dispara acción automática antes del vencimiento del SLA','Controla horario de término de jornada — evita descuentos por salida anticipada','Registra historial de gestión por alerta, técnico y mandante'],how:'Módulo propio integrado con APIs de Claro, WOM y BTR. Captura eventos de desconexión y calcula el tiempo disponible antes del SLA. Asigna automáticamente al técnico más cercano disponible y escala al supervisor si no hay respuesta. Incluye módulo de control de horario: alerta si el técnico cierra jornada antes del tiempo pactado con el mandante.',tech:['React','Firebase','API Claro/WOM/BTR','Alertas push','Control de horario','Dashboard tiempo real']},2:{desc:'La empresa mira los estados financieros del año pasado recién hoy. Los ratios de gasto son completamente desconocidos, impidiendo decisiones de gestión con datos reales.',resolves:['Visibilidad financiera en tiempo real','Ratios gasto/técnico y gasto/flota automáticos','Alertas cuando un ratio supera el presupuesto','Elimina rezago contable de meses'],how:'Conectamos Nubox (×2), Odoo y sistema de flota en un dashboard centralizado. Proceso nocturno sincroniza movimientos y genera KPIs diarios.',tech:['React','Firebase','Integración Nubox','Integración Odoo','Automatización nocturna']},3:{desc:'Torres maneja $3MM semanales en fondos por rendir. El proceso de captura ya existe — el técnico fotografía la boleta y la sube al sistema. El problema es cómo el sistema gestiona esa información: opera por fondo fijo en lugar de línea de crédito rodante, lo que genera saldos incorrectos cuando se entregan fondos semana a semana sin rendición previa. El resultado es un "queso" contable que nadie puede cuadrar y que Renzo califica como urgencia número uno.',resolves:['Reemplazar lógica de fondo fijo por línea de crédito rodante por persona','Saldo disponible en tiempo real — si rindió $300 de $500, tiene $200 disponibles','Eliminar mezcla de saldos entre semanas consecutivas','Mantener el proceso de foto de boleta — solo mejorar cómo se gestiona','Dashboard de fondos activos por brigada y proyecto para administración'],how:'Reemplazamos el sistema actual manteniendo el proceso que ya funciona (foto de boleta). La lógica cambia de fondo fijo a crédito rodante: el saldo se calcula en tiempo real sobre lo rendido vs lo entregado. El administrador ve todos los fondos activos, saldos pendientes y alertas de rendición vencida. El sistema aprueba automáticamente rendiciones dentro del rango o escala para revisión manual.',tech:['React','Firebase','Lógica de crédito rodante','Panel de aprobación','Dashboard tiempo real']},4:{desc:'Renzo lo dijo con claridad: quiere rendimiento por persona — todo tipo de persona. El técnico de terreno, el bodeguero, el técnico de remozamiento. Hoy no existe ningún KPI individual. La clave está en el trío técnico + camioneta + materiales: un técnico puede ser excelente pero si tiene una camioneta panera, pierde materiales o genera multas, el costo real lo invisibiliza. El sistema tiene que cruzar esas tres variables para revelar la rentabilidad real por persona.',resolves:['Rendimiento por técnico de terreno: actividades, tiempo promedio, multas generadas','Ranking de bodegueros: equipos procesados por día en bodega de retiro','Rendimiento por técnico de remozamiento: piezas reparadas por período','Trío técnico + camioneta + materiales: costo real combinado por persona','Alertas de correlaciones negativas — buen técnico con camioneta de alto costo de mantención'],how:'Cruzamos datos de actividad del mandante, GPS de flota y costos de mantención para construir un perfil de rentabilidad real por persona. El sistema calcula el costo total asociado a cada técnico (salario + flota + materiales perdidos + multas generadas) y lo cruza con su producción. Rankings automáticos actualizados diariamente. El bodeguero y el técnico de remozamiento tienen sus propias métricas de producción.',tech:['React','Firebase','Integración GPS','Analytics','Motor de correlación','Ranking automático']},5:{desc:'Renzo lo llamó "el gran kill del asunto". NOW opera con 130 técnicos nacionales, cada uno con vehículo propio — costo fijo. El modelo de negocio es P×Q: paga por unidad retirada o entregada. Cada actividad adicional por técnico por día es ingreso puro sin costo variable. La estrategia de Renzo es clara: primero capturar datos masivamente desde las bases de los mandantes, consolidarlos y sacarlos a terreno en clústeres inteligentes. Con esos datos acumulados, construir un modelo predictivo que optimice la eficiencia de forma continua.',resolves:['Consolidar órdenes de múltiples mandantes en una sola vista diaria','Clusterización geográfica automática — máximas actividades por zona por técnico','Propuesta de ruta óptima al inicio de jornada con un clic de aprobación del supervisor','Captura masiva de datos de cada actividad para alimentar el modelo predictivo','Fase 2: modelo aprende del historial y mejora predicciones de tiempo y asignación'],how:'Fase 1 — Inteligencia de ruta: el sistema ingiere las órdenes del día desde los mandantes, las clusteriza por proximidad geográfica y propone asignaciones óptimas al supervisor antes del inicio de jornada. El supervisor aprueba, ajusta o rechaza. Cada acción queda registrada como dato. Fase 2 — Modelo predictivo: con el historial acumulado, el sistema aprende tiempos reales por tipo de actividad y zona, y mejora las propuestas automáticamente.',tech:['Python','Algoritmo de clusterización','React','Firebase','Modelo ML','Integración APIs mandantes']},6:{desc:'NOW usa Odoo para logística y retiro, pero el sistema tiene fallas críticas de lógica: cuenta los reingresos como equipos nuevos cada vez que una serie entra y sale, inflando el stock irreal. Claro envía equipos vía SAP con discrepancias frecuentes — llegan 500 de 1000 prometidos, o llegan 1000 distintos. Las series pueden pasarse entre técnicos, robarse o quedar sin instalar meses. La logística directa es más compleja aún: hay que armar kits por técnico, asegurarse que instalaron y que devolvieron el equipo anterior. Todo esto con Odoo gestionado "con medio fórmula".',resolves:['Corregir lógica de reingresos — una serie es una serie, no un nuevo equipo cada vez','Cuadre automático contra SAP Claro — detecta discrepancias al momento de recepción','Alerta por serie sin instalación después de 60 días — probable pérdida o robo','Control de transferencias entre técnicos — quién tiene qué serie en todo momento','Gestión de kits para logística directa — armado, entrega y devolución por técnico','Control de stock de repuestos para remozamiento con stock mínimo y alertas'],how:'Módulo de trazabilidad que reemplaza la lógica deficiente de Odoo. Cada serie tiene un ciclo de vida completo: entrada desde mandante, asignación a técnico, instalación o devolución, reingreso a bodega. Los reingresos no crean duplicados. El sistema se integra con SAP Claro para cuadre automático en recepción y escala cualquier discrepancia. Para remozamiento, agrega control de repuestos independiente.',tech:['React','Firebase','Integración SAP Claro','Odoo API','Alertas automáticas','Control de stock']},7:{desc:'Renzo lo describió con tres ejemplos exactos. Uno: son las 2 de la tarde y el técnico no ha iniciado actividad — algo hay que hacer. Dos: inició una actividad que debía durar media hora y lleva 2 horas — algo hay que hacer. Tres: el sistema dice que el técnico está en casa del cliente, pero el GPS de la camioneta muestra que está en el Parque Arauco — se fue a comprar. Hoy no existe ningún sistema que cruce estas dos fuentes en tiempo real y dispare una acción. Renzo ve aquí espacio claro para IA que tome decisiones casi en línea.',resolves:['Técnico sin actividad iniciada pasado el mediodía — alerta automática al supervisor','Actividad que excede el tiempo esperado — alerta con contexto y tiempo transcurrido','Discrepancia GPS vs sistema: ubicación real vs ubicación reportada — alerta inmediata','Integración en tiempo real de bases de mandantes con GPS de flota propia','Categorización automática de anomalías: leve, moderada, crítica'],how:'Integramos en tiempo real el GPS de la flota con los sistemas de actividad de los mandantes. Un motor de reglas evalúa permanentemente tres condiciones: inactividad prolongada, duración excesiva de actividad, y discrepancia entre ubicación GPS y ubicación reportada. Cada anomalía detectada se categoriza y escala al supervisor con el contexto completo para actuar. En fase 2, IA aprende los patrones normales de cada técnico y reduce los falsos positivos.',tech:['React','Firebase','Integración GPS Transity/Taylor','Motor de reglas','APIs mandantes','IA detección de anomalías']},8:{desc:'Hoy REX+ maneja solo contratos y horarios. Todo lo demás — historial laboral, certificaciones, cursos de prevención de riesgos, resultados de exámenes — está disperso en Excel y correo o simplemente no existe. Renzo fue explícito: quiere la vida completa del técnico centralizada. Y lo conectó directamente con el módulo de rendimiento: si vincula al técnico con su flota y sus métricas, puede detectar correlaciones que hoy son invisibles. Un técnico excelente con una camioneta mala o con una certificación vencida es un riesgo operativo y financiero.',resolves:['Perfil completo del técnico: historial laboral, contratos, certificaciones vigentes y vencidas','Control de cursos de prevención de riesgos — alerta cuando está por vencer o no fue aprobado','Alertas automáticas de vencimiento a 15 y 5 días antes — sin intervención manual','Registro de resultados de exámenes: aprobado, no aprobado, pendiente de rendir','Vinculación con módulo de rendimiento (I4) para perfil 360° técnico + flota + producción'],how:'HUB digital del técnico que centraliza todo lo que hoy está disperso. REX+ se mantiene para contratos y horarios — le sumamos la capa de certificaciones, cursos de prevención de riesgos y exámenes. El sistema alerta automáticamente cuando un curso está por vencer o un técnico no aprobó un examen requerido. Vinculado con el módulo de rendimiento, permite cruzar habilitaciones con asignaciones: no asignar un técnico con certificación vencida a un trabajo que la requiere.',tech:['React','Firebase','Integración REX+','Notificaciones push','Mobile-first','Vinculación módulo rendimiento']}};
 
 var activeUnit=null;
 var UNIT_MAP={'ultima-milla':['recepcion-ordenes','ejecucion-terreno','control-alertas','rendimiento-tecnico'],'retiro':['recepcion-retiro','ejecucion-retiro','control-series','optimizacion-rutas'],'torres':['gestion-hitos','fondos-rendir'],'transversal':['finanzas','rrhh','logistica-flota']};
