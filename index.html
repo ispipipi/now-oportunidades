@@ -924,6 +924,22 @@ body {
   cursor:pointer; transition:background .15s;
 }
 .btn-save-note:hover { background:#17a0c2; }
+.note-delete-btn {
+  margin-left:6px;
+  background:none;
+  border:none;
+  color:var(--text-muted);
+  font-size:12px;
+  cursor:pointer;
+  padding:1px 5px;
+  border-radius:4px;
+  transition:all .12s;
+  line-height:1;
+}
+.note-delete-btn:hover {
+  background:var(--red-bg,#FEF2F2);
+  color:var(--red,#C41B1B);
+}
 .notes-empty {
   font-size:12px; color:var(--text-muted);
   font-style:italic; padding:8px 0;
@@ -2156,13 +2172,25 @@ function renderNotesThread(containerId, notes) {
       checkHtml = '<span class="note-check checked-label" style="margin-left:auto">✓ Realizado</span>';
     }
 
+    var deleteBtn = canDo('manageUsers') ?
+      '<button class="note-delete-btn" title="Eliminar observación">✕</button>' : '';
+
     div.innerHTML =
       '<div class="note-header">' +
         '<span class="note-author">' + (note.author||'Usuario') + '</span>' +
         '<span class="note-time">' + formatNoteTime(note.createdAt) + '</span>' +
         checkHtml +
+        deleteBtn +
       '</div>' +
       '<div class="note-text' + (isChecked ? ' checked-text' : '') + '">' + (note.text||'') + '</div>';
+
+    // Botón eliminar
+    var delBtn = div.querySelector('.note-delete-btn');
+    if(delBtn) {
+      delBtn.addEventListener('click', (function(collId, noteId, contId){ return function(){
+        deleteNote(collId, noteId, contId);
+      }; })(note.collId, note.id, containerId));
+    }
 
     // Checkbox listener
     var cb = div.querySelector('input[type="checkbox"]');
@@ -2231,6 +2259,19 @@ function addNote(type, id, containerId, inputId) {
     ta.value = '';
     loadNotesThread(type, id, containerId);
   }).catch(function(e){ console.warn('addNote error:', e); alert('Error al guardar: ' + e.message); });
+}
+
+function deleteNote(collId, noteId, containerId) {
+  if(!confirm('¿Eliminar esta observación?')) return;
+  if(!window._db) return;
+  window._db.collection(collId).doc(noteId).delete()
+    .then(function(){
+      // Re-renderizar
+      var parts = containerId.replace('notes-thread-','');
+      var typeMatch = parts.match(/^(opp|proc)-(.+)$/);
+      if(typeMatch) loadNotesThread(typeMatch[1], typeMatch[2], containerId);
+    })
+    .catch(function(e){ console.warn('deleteNote error:', e); });
 }
 
 function toggleNoteCheck(collId, noteId, checked, containerId) {
