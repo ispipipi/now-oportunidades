@@ -862,6 +862,72 @@ body {
 .user-row:hover { background:var(--card-hover); }
 .user-name { font-size:13px; font-weight:600; color:var(--text); }
 .user-email { font-size:12px; color:var(--text-muted); margin-top:2px; }
+
+/* ══ HILO DE OBSERVACIONES ══ */
+.notes-thread { display:flex; flex-direction:column; gap:10px; margin-bottom:12px; }
+.note-item {
+  background:var(--bg);
+  border:1px solid var(--border-card);
+  border-radius:var(--r-sm);
+  padding:10px 12px;
+  position:relative;
+}
+.note-item.checked {
+  background:rgba(13,159,90,0.05);
+  border-color:rgba(13,159,90,0.25);
+}
+.note-header {
+  display:flex; align-items:center; gap:8px; margin-bottom:5px;
+  flex-wrap:wrap;
+}
+.note-author {
+  font-size:12px; font-weight:700; color:var(--text);
+}
+.note-time {
+  font-size:11px; color:var(--text-muted);
+}
+.note-check {
+  margin-left:auto;
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; color:var(--text-muted);
+}
+.note-check input[type="checkbox"] {
+  width:15px; height:15px; cursor:pointer;
+  accent-color:var(--green);
+}
+.note-check.checked-label { color:var(--green); font-weight:600; }
+.note-text {
+  font-size:13px; color:var(--text-soft);
+  line-height:1.6; white-space:pre-wrap;
+}
+.note-text.checked-text { text-decoration:line-through; opacity:0.6; }
+.notes-input-wrap {
+  display:flex; flex-direction:column; gap:8px; margin-top:4px;
+}
+.notes-textarea {
+  width:100%; font-family:'Inter',system-ui,sans-serif;
+  font-size:13px; color:var(--text);
+  border:1.5px solid var(--border-card);
+  border-radius:var(--r-sm);
+  padding:10px 12px; background:var(--elevated);
+  outline:none; resize:vertical; min-height:80px;
+  line-height:1.6; transition:border-color .15s;
+}
+.notes-textarea:focus { border-color:var(--accent); background:var(--card); }
+.notes-textarea::placeholder { color:var(--text-muted); font-style:italic; }
+.btn-save-note {
+  align-self:flex-end;
+  background:var(--accent); color:#fff;
+  border:none; font-family:'Inter',system-ui,sans-serif;
+  font-size:12px; font-weight:700;
+  padding:7px 16px; border-radius:var(--r-sm);
+  cursor:pointer; transition:background .15s;
+}
+.btn-save-note:hover { background:#17a0c2; }
+.notes-empty {
+  font-size:12px; color:var(--text-muted);
+  font-style:italic; padding:8px 0;
+}
 </style>
 </head>
 <body>
@@ -1389,18 +1455,24 @@ var UNIT_MAP={'ultima-milla':['recepcion-ordenes','ejecucion-terreno','control-a
 
 function switchView(vid,btn){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.getElementById('view-'+vid).classList.add('active');if(btn)btn.classList.add('active');var t={'mapa':'Mapa del negocio','oportunidades':'Oportunidades de mejora','gantt':'Roadmap de implementación'};document.getElementById('topbar-title').textContent=t[vid]||vid;if(vid!=='mapa')closePanel();if(vid==='mapa'){resetUnitHighlight();activeUnit=null;}if(vid==='gantt'){renderGantt();}}
 
-function openPanel(k){var p=PROCESSES[k];if(!p)return;var tag=document.getElementById('panel-unit-tag');tag.textContent=p.unit;tag.style.background=p.unitBg;tag.style.color=p.unitColor;tag.style.border='1px solid '+p.unitColor+'55';document.getElementById('panel-title').textContent=p.title;document.getElementById('panel-desc').textContent=p.desc;var h='<div class="panel-section"><div class="panel-section-title">Actores</div><div class="actor-list">'+p.actors.map(function(a){return '<span class="actor-chip">'+a+'</span>';}).join('')+'</div></div>';h+='<div class="panel-section"><div class="panel-section-title">Flujo de información</div><div class="io-row"><div class="io-box"><div class="io-box-label in">↓ Inputs</div>'+p.inputs.map(function(i){return '<div class="io-item"><span class="io-dot in"></span>'+i+'</div>';}).join('')+'</div><div class="io-box"><div class="io-box-label out">↑ Outputs</div>'+p.outputs.map(function(o){return '<div class="io-item"><span class="io-dot out"></span>'+o+'</div>';}).join('')+'</div></div></div>';h+='<div class="panel-section"><div class="panel-section-title">Oportunidades de mejora</div>'+p.opps.map(function(op){return '<div class="opp-chip" onclick="scrollToOpp('+op.ref+')"><span class="opp-chip-icon">⚡</span><div><div class="opp-chip-text">'+op.text+'</div><span class="opp-chip-tag">'+op.tag+'</span></div></div>';}).join('')+'</div>';var pNotes=PROCESS_NOTES[k]||'';
-  h+='<div class="panel-section"><div class="panel-section-title">Observaciones</div>' +
-    '<div class="panel-notes-wrap">' +
-      '<textarea class="panel-notes-input" id="panel-notes-ta" placeholder="Agrega observaciones, acuerdos o contexto adicional..." onchange="saveProcessNote(\''+k+'\')">' + pNotes + '</textarea>' +
-      '<div class="panel-notes-saved" id="panel-notes-saved"></div>' +
-    '</div></div>';
+function openPanel(k){var p=PROCESSES[k];if(!p)return;var tag=document.getElementById('panel-unit-tag');tag.textContent=p.unit;tag.style.background=p.unitBg;tag.style.color=p.unitColor;tag.style.border='1px solid '+p.unitColor+'55';document.getElementById('panel-title').textContent=p.title;document.getElementById('panel-desc').textContent=p.desc;var h='<div class="panel-section"><div class="panel-section-title">Actores</div><div class="actor-list">'+p.actors.map(function(a){return '<span class="actor-chip">'+a+'</span>';}).join('')+'</div></div>';h+='<div class="panel-section"><div class="panel-section-title">Flujo de información</div><div class="io-row"><div class="io-box"><div class="io-box-label in">↓ Inputs</div>'+p.inputs.map(function(i){return '<div class="io-item"><span class="io-dot in"></span>'+i+'</div>';}).join('')+'</div><div class="io-box"><div class="io-box-label out">↑ Outputs</div>'+p.outputs.map(function(o){return '<div class="io-item"><span class="io-dot out"></span>'+o+'</div>';}).join('')+'</div></div></div>';h+='<div class="panel-section"><div class="panel-section-title">Oportunidades de mejora</div>'+p.opps.map(function(op){return '<div class="opp-chip" onclick="scrollToOpp('+op.ref+')"><span class="opp-chip-icon">⚡</span><div><div class="opp-chip-text">'+op.text+'</div><span class="opp-chip-tag">'+op.tag+'</span></div></div>';}).join('')+'</div>';h+='<div class="panel-section" id="panel-notes-section">' +
+    '<div class="panel-section-title">Observaciones</div>' +
+    '<div class="notes-thread" id="notes-thread-proc-'+k+'"><div class="notes-empty">Cargando...</div></div>' +
+    (canDo('addNotes') ?
+      '<div class="notes-input-wrap">' +
+      '<textarea class="notes-textarea" id="notes-input-proc-'+k+'" placeholder="Escribe una observación..."></textarea>' +
+      '<button class="btn-save-note" id="notes-btn-proc-'+k+'">Guardar observación</button>' +
+      '</div>' : '') +
+    '</div>';
   document.getElementById('panel-body').innerHTML=h;
   document.getElementById('detail-panel').classList.add('open');
-  (function(key){
-    var ta=document.getElementById('panel-notes-ta');
-    if(ta){ta.addEventListener('input',function(){saveProcessNote(key);});}
-  })(k);}
+  loadNotesThread('proc', k, 'notes-thread-proc-'+k);
+  var btnP = document.getElementById('notes-btn-proc-'+k);
+  if(btnP) {
+    btnP.addEventListener('click', (function(key){ return function(){
+      addNote('proc', key, 'notes-thread-proc-'+key, 'notes-input-proc-'+key);
+    }; })(k));
+  }}
 function closePanel(){document.getElementById('detail-panel').classList.remove('open');}
 
 function filterUnit(uk,btn){switchView('mapa',null);document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});document.querySelectorAll('.nav-item')[0].classList.add('active');if(btn)btn.classList.add('active');resetUnitHighlight();if(activeUnit===uk){activeUnit=null;return;}activeUnit=uk;var svg=document.getElementById('diagram-svg');svg.querySelectorAll('rect[rx="16"]').forEach(function(r){r.style.opacity='0.15';});svg.querySelectorAll('g.node-process').forEach(function(g){g.style.opacity='0.1';});var ui={'ultima-milla':0,'retiro':1,'torres':2,'transversal':3};var all=svg.querySelectorAll('rect[rx="16"]');if(all[ui[uk]]){all[ui[uk]].style.opacity='1';all[ui[uk]].style.strokeWidth='2.5';}var procs=UNIT_MAP[uk]||[];svg.querySelectorAll('g.node-process').forEach(function(g){var oc=g.getAttribute('onclick')||'';procs.forEach(function(pid){if(oc.indexOf(pid)!==-1)g.style.opacity='1';});});var sm={'ultima-milla':0,'retiro':0,'torres':280,'transversal':280};document.getElementById('map-canvas').scrollTop=sm[uk]||0;}
@@ -1439,8 +1511,26 @@ function closeModal(){document.getElementById('modal-overlay').classList.remove(
 function closeModalOverlay(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
 function pc(v,t){if(t==='i')return v==='Alto'?'high-impact':v==='Medio'?'med-impact':'low-impact';return v==='Alta'?'high-diff':v==='Media'?'med-diff':'low-diff';}
 
-function renderModalView(opp){var det=OPP_DETAIL[opp.id]||{desc:'Sin descripción.',resolves:[],how:'',tech:[]};document.getElementById('modal-num').textContent=opp.id;document.getElementById('modal-num').style.background=opp.color;document.getElementById('modal-title').textContent=opp.name;document.getElementById('modal-unit').textContent=opp.unit;document.getElementById('modal-body').innerHTML='<div class="modal-indicators"><div class="modal-ind"><div class="modal-ind-label">Impacto</div><span class="pill '+pc(opp.impact,'i')+'">'+opp.impact+'</span></div><div class="modal-ind"><div class="modal-ind-label">Dificultad</div><span class="pill '+pc(opp.diff,'d')+'">'+opp.diff+'</span></div><div class="modal-ind"><div class="modal-ind-label">Tiempo estimado</div><span style="font-size:15px;font-weight:700;color:var(--text)">⏱ '+opp.time+'</span></div></div><div class="modal-section"><div class="modal-section-title">Contexto y problema</div><div class="modal-desc">'+det.desc+'</div></div><div class="modal-section"><div class="modal-section-title">Qué resuelve</div><ul class="modal-bullets">'+det.resolves.map(function(r){return '<li><span class="bullet-dot"></span>'+r+'</li>';}).join('')+'</ul></div><div class="modal-section"><div class="modal-section-title">Cómo lo haríamos</div><div class="modal-desc">'+det.how+'</div></div><div class="modal-section"><div class="modal-section-title">Tecnologías</div><div class="tech-tags">'+det.tech.map(function(t){return '<span class="tech-tag">'+t+'</span>';}).join('')+'</div></div>';var notes = (OPP_DETAIL[opp.id]&&OPP_DETAIL[opp.id].notes)||'';
-  document.getElementById('modal-body').innerHTML += '<div class="modal-section"><div class="modal-section-title">Observaciones</div>' + (notes ? '<div class="modal-notes-box">' + notes.replace(/\n/g,'<br>') + '</div>' : '<div class="modal-notes-empty">Sin observaciones. Haz clic en Editar para agregar.</div>') + '</div>';
+function renderModalView(opp){var det=OPP_DETAIL[opp.id]||{desc:'Sin descripción.',resolves:[],how:'',tech:[]};document.getElementById('modal-num').textContent=opp.id;document.getElementById('modal-num').style.background=opp.color;document.getElementById('modal-title').textContent=opp.name;document.getElementById('modal-unit').textContent=opp.unit;document.getElementById('modal-body').innerHTML='<div class="modal-indicators"><div class="modal-ind"><div class="modal-ind-label">Impacto</div><span class="pill '+pc(opp.impact,'i')+'">'+opp.impact+'</span></div><div class="modal-ind"><div class="modal-ind-label">Dificultad</div><span class="pill '+pc(opp.diff,'d')+'">'+opp.diff+'</span></div><div class="modal-ind"><div class="modal-ind-label">Tiempo estimado</div><span style="font-size:15px;font-weight:700;color:var(--text)">⏱ '+opp.time+'</span></div></div><div class="modal-section"><div class="modal-section-title">Contexto y problema</div><div class="modal-desc">'+det.desc+'</div></div><div class="modal-section"><div class="modal-section-title">Qué resuelve</div><ul class="modal-bullets">'+det.resolves.map(function(r){return '<li><span class="bullet-dot"></span>'+r+'</li>';}).join('')+'</ul></div><div class="modal-section"><div class="modal-section-title">Cómo lo haríamos</div><div class="modal-desc">'+det.how+'</div></div><div class="modal-section"><div class="modal-section-title">Tecnologías</div><div class="tech-tags">'+det.tech.map(function(t){return '<span class="tech-tag">'+t+'</span>';}).join('')+'</div></div>';// Sección de observaciones — hilo
+  document.getElementById('modal-body').innerHTML +=
+    '<div class="modal-section" id="modal-notes-section-'+opp.id+'">' +
+    '<div class="modal-section-title">Observaciones</div>' +
+    '<div class="notes-thread" id="notes-thread-opp-'+opp.id+'"><div class="notes-empty">Cargando...</div></div>' +
+    (canDo('addNotes') ?
+      '<div class="notes-input-wrap">' +
+      '<textarea class="notes-textarea" id="notes-input-opp-'+opp.id+'" placeholder="Escribe una observación..."></textarea>' +
+      '<button class="btn-save-note" id="notes-btn-opp-'+opp.id+'">Guardar observación</button>' +
+      '</div>' : '') +
+    '</div>';
+
+  // Cargar hilo y configurar botón
+  loadNotesThread('opp', opp.id, 'notes-thread-opp-'+opp.id);
+  var btnNote = document.getElementById('notes-btn-opp-'+opp.id);
+  if(btnNote) {
+    btnNote.addEventListener('click', (function(id){ return function(){
+      addNote('opp', id, 'notes-thread-opp-'+id, 'notes-input-opp-'+id);
+    }; })(opp.id));
+  }
   document.getElementById('modal-footer').innerHTML='<button class="btn-delete" onclick="deleteOpp('+opp.id+');closeModal()">Eliminar</button><button class="btn-edit" onclick="openModal('+opp.id+',\'edit\')">✏ Editar</button>';}
 
 function renderModalEdit(opp){var det=OPP_DETAIL[opp.id]||{desc:'',resolves:[],how:'',tech:[]};document.getElementById('modal-num').textContent=opp.id;document.getElementById('modal-num').style.background=opp.color;document.getElementById('modal-title').innerHTML='<input class="edit-field" id="edit-name" value="'+opp.name.replace(/"/g,'&quot;')+'" style="font-size:17px;font-weight:800;padding:6px 10px;margin-top:2px;">';document.getElementById('modal-unit').innerHTML='<input class="edit-field" id="edit-unit" value="'+opp.unit.replace(/"/g,'&quot;')+'" style="font-size:12px;padding:4px 8px;margin-top:4px;width:200px;">';document.getElementById('modal-body').innerHTML='<div class="modal-indicators"><div class="modal-ind"><div class="modal-ind-label">Impacto</div><select class="edit-select" id="edit-impact"><option'+(opp.impact==='Alto'?' selected':'')+'>Alto</option><option'+(opp.impact==='Medio'?' selected':'')+'>Medio</option><option'+(opp.impact==='Bajo'?' selected':'')+'>Bajo</option></select></div><div class="modal-ind"><div class="modal-ind-label">Dificultad</div><select class="edit-select" id="edit-diff"><option'+(opp.diff==='Alta'?' selected':'')+'>Alta</option><option'+(opp.diff==='Media'?' selected':'')+'>Media</option><option'+(opp.diff==='Baja'?' selected':'')+'>Baja</option></select></div><div class="modal-ind"><div class="modal-ind-label">Tiempo</div><input class="edit-field" id="edit-time" value="'+opp.time+'" style="font-size:13px;padding:5px 8px;width:110px;"></div></div><div class="modal-section"><div class="modal-section-title">Contexto y problema</div><textarea class="edit-field" id="edit-desc" rows="3">'+det.desc+'</textarea></div><div class="modal-section"><div class="modal-section-title">Qué resuelve</div><div class="edit-bullets-wrap" id="edit-resolves">'+det.resolves.map(function(r){return '<div class="edit-bullet-row"><input class="edit-field edit-bullet-input" value="'+r.replace(/"/g,'&quot;')+'"><button class="btn-remove-bullet" onclick="removeBullet(this)">✕</button></div>';}).join('')+'</div><button class="btn-add-bullet" onclick="addBullet(\'edit-resolves\')">+ Agregar punto</button></div><div class="modal-section"><div class="modal-section-title">Cómo lo haríamos</div><textarea class="edit-field" id="edit-how" rows="3">'+det.how+'</textarea></div><div class="modal-section"><div class="modal-section-title">Tecnologías (separadas por coma)</div><input class="edit-field" id="edit-tech" value="'+det.tech.join(', ')+'"></div>';var notesVal = (OPP_DETAIL[opp.id]&&OPP_DETAIL[opp.id].notes)||'';
@@ -1453,8 +1543,7 @@ function renderModalNew(){document.getElementById('modal-num').textContent='+';d
 function addBullet(cid){var w=document.getElementById(cid);var row=document.createElement('div');row.className='edit-bullet-row';row.innerHTML='<input class="edit-field edit-bullet-input" placeholder="Nuevo punto..."><button class="btn-remove-bullet" onclick="removeBullet(this)">✕</button>';w.appendChild(row);}
 function removeBullet(btn){btn.parentElement.remove();}
 function getResolves(){return Array.from(document.querySelectorAll('#edit-resolves .edit-bullet-input')).map(function(i){return i.value;}).filter(function(v){return v.trim();});}
-function saveEdit(id){var opp=OPPS.find(function(o){return o.id===id;});if(!opp)return;opp.name=document.getElementById('edit-name').value;opp.unit=document.getElementById('edit-unit').value;opp.impact=document.getElementById('edit-impact').value;opp.diff=document.getElementById('edit-diff').value;opp.time=document.getElementById('edit-time').value;var notesEl=document.getElementById('edit-notes');
-  OPP_DETAIL[id]={desc:document.getElementById('edit-desc').value,resolves:getResolves(),how:document.getElementById('edit-how').value,tech:document.getElementById('edit-tech').value.split(',').map(function(t){return t.trim();}).filter(Boolean),notes:notesEl?notesEl.value:''};renderAll();openModal(id,'view');}
+function saveEdit(id){var opp=OPPS.find(function(o){return o.id===id;});if(!opp)return;opp.name=document.getElementById('edit-name').value;opp.unit=document.getElementById('edit-unit').value;opp.impact=document.getElementById('edit-impact').value;opp.diff=document.getElementById('edit-diff').value;opp.time=document.getElementById('edit-time').value;OPP_DETAIL[id]={desc:document.getElementById('edit-desc').value,resolves:getResolves(),how:document.getElementById('edit-how').value,tech:document.getElementById('edit-tech').value.split(',').map(function(t){return t.trim();}).filter(Boolean)};renderAll();openModal(id,'view');}
 function saveNew(){var name=document.getElementById('edit-name').value.trim();if(!name){document.getElementById('edit-name').focus();return;}var newId=Math.max.apply(null,OPPS.map(function(o){return o.id;}))+1;OPPS.push({id:newId,name:name,unit:document.getElementById('edit-unit').value||'General',unitColor:'#64748B',impact:document.getElementById('edit-impact').value,diff:document.getElementById('edit-diff').value,time:document.getElementById('edit-time').value||'Por definir',color:'#64748B'});var notesElN=document.getElementById('edit-notes');
   OPP_DETAIL[newId]={desc:document.getElementById('edit-desc').value,resolves:getResolves(),how:document.getElementById('edit-how').value,tech:document.getElementById('edit-tech').value.split(',').map(function(t){return t.trim();}).filter(Boolean),notes:notesElN?notesElN.value:''};renderAll();closeModal();}
 function deleteOpp(id){if(!confirm('¿Eliminar esta oportunidad?'))return;var idx=OPPS.findIndex(function(o){return o.id===id;});if(idx!==-1)OPPS.splice(idx,1);renderAll();}
@@ -2026,6 +2115,157 @@ function closeUserModalOverlay(e) {
   };
 })();
 
+
+
+// ═══════════════════════════════════════════
+// HILO DE OBSERVACIONES
+// ═══════════════════════════════════════════
+
+function getNotesCollection(type, id) {
+  // type: 'opp' o 'proc'
+  return 'notes_' + type + '_' + String(id).replace(/[^a-zA-Z0-9_]/g,'_');
+}
+
+function formatNoteTime(ts) {
+  if(!ts) return '';
+  var d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleDateString('es-CL', {day:'numeric',month:'short',year:'2-digit'}) + ' ' +
+    d.toLocaleTimeString('es-CL', {hour:'2-digit',minute:'2-digit'});
+}
+
+function renderNotesThread(containerId, notes) {
+  var el = document.getElementById(containerId);
+  if(!el) return;
+  if(!notes || notes.length === 0) {
+    el.innerHTML = '<div class="notes-empty">Sin observaciones aún.</div>';
+    return;
+  }
+  el.innerHTML = '';
+  notes.forEach(function(note, idx) {
+    var isChecked = !!note.checked;
+    var div = document.createElement('div');
+    div.className = 'note-item' + (isChecked ? ' checked' : '');
+
+    var checkHtml = '';
+    if(canDo('checkNotes')) {
+      checkHtml = '<label class="note-check' + (isChecked ? ' checked-label' : '') + '">' +
+        '<input type="checkbox"' + (isChecked ? ' checked' : '') + ' data-idx="'+idx+'" data-container="'+containerId+'" data-noteid="'+note.id+'">' +
+        (isChecked ? 'Realizado' : 'Marcar realizado') +
+        '</label>';
+    } else if(isChecked) {
+      checkHtml = '<span class="note-check checked-label" style="margin-left:auto">✓ Realizado</span>';
+    }
+
+    div.innerHTML =
+      '<div class="note-header">' +
+        '<span class="note-author">' + (note.author||'Usuario') + '</span>' +
+        '<span class="note-time">' + formatNoteTime(note.createdAt) + '</span>' +
+        checkHtml +
+      '</div>' +
+      '<div class="note-text' + (isChecked ? ' checked-text' : '') + '">' + (note.text||'') + '</div>';
+
+    // Checkbox listener
+    var cb = div.querySelector('input[type="checkbox"]');
+    if(cb) {
+      cb.addEventListener('change', (function(noteId, collId){ return function(e){
+        toggleNoteCheck(collId, noteId, e.target.checked, containerId);
+      }; })(note.id, note.collId));
+    }
+    el.appendChild(div);
+  });
+}
+
+function loadNotesThread(type, id, containerId) {
+  if(!window._db) {
+    var el = document.getElementById(containerId);
+    if(el) el.innerHTML = '<div class="notes-empty">Sin observaciones aún.</div>';
+    return;
+  }
+  var collId = getNotesCollection(type, id);
+  window._db.collection(collId).orderBy('createdAt','asc').get()
+    .then(function(snap){
+      var notes = [];
+      snap.forEach(function(doc){
+        var d = doc.data();
+        d.id = doc.id;
+        d.collId = collId;
+        notes.push(d);
+      });
+      renderNotesThread(containerId, notes);
+    })
+    .catch(function(e){
+      // Si no hay índice, cargar sin orderBy
+      window._db.collection(collId).get()
+        .then(function(snap){
+          var notes = [];
+          snap.forEach(function(doc){
+            var d = doc.data();
+            d.id = doc.id;
+            d.collId = collId;
+            notes.push(d);
+          });
+          notes.sort(function(a,b){ return (a.createdAt||0) - (b.createdAt||0); });
+          renderNotesThread(containerId, notes);
+        })
+        .catch(function(e2){ console.warn('loadNotes error:', e2); });
+    });
+}
+
+function addNote(type, id, containerId, inputId) {
+  var ta = document.getElementById(inputId);
+  if(!ta) return;
+  var text = ta.value.trim();
+  if(!text) { ta.focus(); return; }
+  if(!window._db || !window._auth || !window._auth.currentUser) return;
+
+  var collId = getNotesCollection(type, id);
+  var authorName = currentUserName || currentUserEmail || 'Usuario';
+
+  window._db.collection(collId).add({
+    text: text,
+    author: authorName,
+    authorEmail: currentUserEmail,
+    checked: false,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
+    ta.value = '';
+    loadNotesThread(type, id, containerId);
+  }).catch(function(e){ console.warn('addNote error:', e); alert('Error al guardar: ' + e.message); });
+}
+
+function toggleNoteCheck(collId, noteId, checked, containerId) {
+  if(!window._db) return;
+  window._db.collection(collId).doc(noteId).update({ checked: checked })
+    .then(function(){
+      // Re-renderizar el thread
+      var parts = containerId.split('notes-thread-');
+      if(parts.length < 2) return;
+      var rest = parts[1]; // e.g. 'opp-1' o 'proc-recepcion-ordenes'
+      var typeMatch = rest.match(/^(opp|proc)-(.+)$/);
+      if(!typeMatch) return;
+      loadNotesThread(typeMatch[1], typeMatch[2], containerId);
+    })
+    .catch(function(e){ console.warn('toggleNoteCheck error:', e); });
+}
+
+// Variable para nombre del usuario actual
+var currentUserName = '';
+
+// Extender loadUserProfile para capturar nombre
+(function(){
+  var origLoad = loadUserProfile;
+  loadUserProfile = function(email) {
+    origLoad(email);
+    // Cargar nombre desde Firestore
+    if(window._db && email) {
+      window._db.collection('users').where('email','==',email).get()
+        .then(function(snap){
+          if(!snap.empty) currentUserName = snap.docs[0].data().nombre || email;
+          else currentUserName = email.split('@')[0];
+        }).catch(function(){ currentUserName = email.split('@')[0]; });
+    }
+  };
+})();
 
 </script>
 </div><!-- /app-shell -->
