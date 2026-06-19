@@ -944,6 +944,33 @@ body {
   font-size:12px; color:var(--text-muted);
   font-style:italic; padding:8px 0;
 }
+
+/* ══ REGISTRO POR INVITACIÓN ══ */
+#register-screen {
+  display:none;
+  position:fixed;inset:0;
+  background:#EDF2F7;
+  z-index:9100;
+  align-items:center;justify-content:center;
+  font-family:'Inter',system-ui,sans-serif;
+}
+#register-screen.visible { display:flex; }
+.register-box {
+  background:#fff;
+  border-radius:20px;
+  padding:40px 44px;
+  width:420px;
+  max-width:94vw;
+  box-shadow:0 8px 40px rgba(13,30,51,0.12);
+  border:1px solid rgba(13,30,51,0.08);
+}
+.register-perfil-badge {
+  display:inline-block;
+  font-size:11px;font-weight:700;
+  letter-spacing:0.1em;text-transform:uppercase;
+  padding:4px 12px;border-radius:20px;
+  margin-bottom:14px;
+}
 </style>
 </head>
 <body>
@@ -1427,7 +1454,11 @@ body {
           <div class="page-title">Gestión de usuarios</div>
           <div class="page-desc">Crea, edita y elimina usuarios. Asigna perfiles de acceso.</div>
         </div>
-        <button class="btn-add" onclick="openUserModal(null)">+ Nuevo usuario</button>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn-add" onclick="openUserModal(null)">+ Nuevo usuario</button>
+          <button class="btn-add" style="background:var(--green);box-shadow:0 2px 8px rgba(13,159,90,0.25);" onclick="generateInviteLink('now')">🔗 Invitar NOW</button>
+          <button class="btn-add" style="background:#B45309;box-shadow:0 2px 8px rgba(180,83,9,0.25);" onclick="generateInviteLink('comercial')">🔗 Invitar Comercial</button>
+        </div>
       </div>
 
       <!-- Tabla de usuarios -->
@@ -2308,7 +2339,182 @@ var currentUserName = '';
   };
 })();
 
+
+// ═══════════════════════════════════════════
+// INVITACIONES Y REGISTRO
+// ═══════════════════════════════════════════
+var inviteToken = null;
+var invitePerfil = null;
+
+// Verificar si hay token en la URL al cargar
+(function checkInviteToken(){
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get('invite');
+  if(!token) return;
+
+  // Buscar token en Firestore
+  function waitDbForInvite(tries) {
+    if(tries <= 0) return;
+    if(!window._db) { setTimeout(function(){ waitDbForInvite(tries-1); }, 300); return; }
+    window._db.collection('invites').doc(token).get()
+      .then(function(snap){
+        if(!snap.exists || snap.data().used) {
+          alert('Este link de invitación no es válido o ya fue usado.');
+          return;
+        }
+        var data = snap.data();
+        inviteToken  = token;
+        invitePerfil = data.perfil;
+
+        // Mostrar pantalla de registro
+        document.getElementById('app-loading').style.display = 'none';
+        showRegister(data.perfil);
+      })
+      .catch(function(e){ console.warn('invite check error:', e); });
+  }
+  waitDbForInvite(15);
+})();
+
+function showRegister(perfil) {
+  var screen = document.getElementById('register-screen');
+  if(!screen) return;
+  screen.classList.add('visible');
+
+  var perfilLabel = perfil==='now'?'NOW':perfil==='comercial'?'Comercial':'Admin';
+  var perfilColor = perfil==='now'?'#0D9F5A':perfil==='comercial'?'#B45309':'#C41B1B';
+  var perfilBg    = perfil==='now'?'rgba(13,159,90,.1)':perfil==='comercial'?'rgba(180,83,9,.1)':'rgba(196,27,27,.1)';
+
+  var wrap = document.getElementById('register-perfil-wrap');
+  if(wrap) wrap.innerHTML = '<span class="register-perfil-badge" style="background:'+perfilBg+';color:'+perfilColor+';border:1px solid '+perfilColor+'33">Perfil: '+perfilLabel+'</span>';
+
+  var sub = document.getElementById('register-subtitle');
+  if(sub) sub.textContent = 'Fuiste invitado como '+perfilLabel+'. Crea tu cuenta para acceder.';
+}
+
+function showLogin() {
+  var screen = document.getElementById('register-screen');
+  if(screen) screen.classList.remove('visible');
+  var login = document.getElementById('login-screen');
+  if(login) login.style.display = 'flex';
+}
+
+function doRegister() {
+  var nombre   = (document.getElementById('reg-nombre')||{}).value||'';
+  var email    = (document.getElementById('reg-email')||{}).value||'';
+  var password = (document.getElementById('reg-password')||{}).value||'';
+  var errEl    = document.getElementById('reg-error');
+  errEl.style.display = 'none';
+
+  nombre = nombre.trim(); email = email.trim();
+  if(!nombre||!email||!password){ errEl.textContent='Completa todos los campos.'; errEl.style.display='block'; return; }
+  if(password.length < 6){ errEl.textContent='La contraseña debe tener al menos 6 caracteres.'; errEl.style.display='block'; return; }
+  if(!inviteToken||!invitePerfil){ errEl.textContent='Token de invitación inválido.'; errEl.style.display='block'; return; }
+
+  window._auth.createUserWithEmailAndPassword(email, password)
+    .then(function(cred){
+      var safeId = email.replace(/[.@]/g,'_');
+      // Guardar perfil en Firestore
+      return window._db.collection('users').doc(safeId).set({
+        email:email, nombre:nombre, perfil:invitePerfil,
+        createdAt: new Date().toISOString()
+      }).then(function(){
+        // Marcar invite como usado
+        return window._db.collection('invites').doc(inviteToken).update({ used:true, usedBy:email });
+      });
+    })
+    .then(function(){
+      // Ocultar registro — onAuthStateChanged mostrará la app
+      document.getElementById('register-screen').classList.remove('visible');
+      // Limpiar URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    })
+    .catch(function(e){
+      var msg = e.code === 'auth/email-already-in-use' ? 'Este email ya tiene una cuenta.' :
+                e.code === 'auth/invalid-email' ? 'Email inválido.' : e.message;
+      errEl.textContent = msg;
+      errEl.style.display = 'block';
+    });
+}
+
+// ── Generar link de invitación desde menú Usuarios ──
+function generateInviteLink(perfil) {
+  if(!window._db) return;
+  var token = Math.random().toString(36).substr(2,12) + Date.now().toString(36);
+  window._db.collection('invites').doc(token).set({
+    perfil:perfil,
+    used:false,
+    createdAt: new Date().toISOString(),
+    createdBy: currentUserEmail
+  }).then(function(){
+    var link = window.location.origin + window.location.pathname + '?invite=' + token;
+    // Mostrar link en modal
+    showInviteModal(link, perfil);
+  }).catch(function(e){ alert('Error: ' + e.message); });
+}
+
+function showInviteModal(link, perfil) {
+  var perfilLabel = perfil==='now'?'NOW':perfil==='comercial'?'Comercial':'Admin';
+  var existing = document.getElementById('invite-modal');
+  if(existing) existing.remove();
+
+  var modal = document.createElement('div');
+  modal.id = 'invite-modal';
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(13,30,51,0.5);z-index:9500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+  modal.innerHTML =
+    '<div style="background:#fff;border-radius:16px;padding:32px;width:520px;max-width:94vw;box-shadow:0 8px 40px rgba(13,30,51,0.15);">' +
+      '<div style="font-size:18px;font-weight:800;color:#0D1E33;margin-bottom:6px;">Link de invitación — '+perfilLabel+'</div>' +
+      '<div style="font-size:13px;color:#61758A;margin-bottom:16px;">Comparte este link con el usuario. Es de un solo uso y expira cuando se registre.</div>' +
+      '<div style="background:#EDF2F7;border-radius:8px;padding:12px 14px;font-size:12px;color:#0D1E33;word-break:break-all;margin-bottom:16px;border:1px solid #E2E8F0;">'+link+'</div>' +
+      '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
+        '<button onclick="this.closest('#invite-modal').remove()" style="background:#F1F5F9;border:1px solid #E2E8F0;color:#374151;font-family:inherit;font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;cursor:pointer;">Cerrar</button>' +
+        '<button onclick="navigator.clipboard.writeText(''+link+'').then(function(){var b=this;b.textContent='¡Copiado!';setTimeout(function(){b.textContent='Copiar link';},2000);}.bind(this))" style="background:#1BB4D8;color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;border-radius:8px;cursor:pointer;">Copiar link</button>' +
+      '</div>' +
+    '</div>';
+
+  // Fix: cerrar modal al hacer clic fuera
+  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
+  document.body.appendChild(modal);
+}
+
 </script>
 </div><!-- /app-shell -->
+
+<!-- REGISTRO POR INVITACIÓN -->
+<div id="register-screen">
+  <div class="register-box">
+    <div id="register-perfil-wrap" style="margin-bottom:6px;"></div>
+    <div style="font-size:26px;font-weight:800;color:#0D1E33;letter-spacing:-0.5px;margin-bottom:4px;">Crear cuenta</div>
+    <div style="font-size:13px;color:#61758A;margin-bottom:24px;" id="register-subtitle">Completa tus datos para acceder.</div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:11px;font-weight:600;color:#61758A;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Nombre completo</label>
+      <input id="reg-nombre" type="text" placeholder="Tu nombre"
+        style="width:100%;font-family:inherit;font-size:14px;color:#0D1E33;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 14px;outline:none;background:#fff;"
+        onfocus="this.style.borderColor='#1BB4D8'" onblur="this.style.borderColor='#E2E8F0'">
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:11px;font-weight:600;color:#61758A;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Correo electrónico</label>
+      <input id="reg-email" type="email" placeholder="tu@email.com"
+        style="width:100%;font-family:inherit;font-size:14px;color:#0D1E33;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 14px;outline:none;background:#fff;"
+        onfocus="this.style.borderColor='#1BB4D8'" onblur="this.style.borderColor='#E2E8F0'">
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="display:block;font-size:11px;font-weight:600;color:#61748A;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:6px;">Contraseña</label>
+      <input id="reg-password" type="password" placeholder="Mínimo 6 caracteres"
+        style="width:100%;font-family:inherit;font-size:14px;color:#0D1E33;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 14px;outline:none;background:#fff;"
+        onfocus="this.style.borderColor='#1BB4D8'" onblur="this.style.borderColor='#E2E8F0'"
+        onkeydown="if(event.key==='Enter')doRegister()">
+    </div>
+    <button onclick="doRegister()"
+      style="width:100%;background:#1BB4D8;color:#fff;border:none;font-family:inherit;font-size:14px;font-weight:700;padding:12px;border-radius:8px;cursor:pointer;transition:background .15s;"
+      onmouseover="this.style.background='#17a0c2'" onmouseout="this.style.background='#1BB4D8'">
+      Crear cuenta
+    </button>
+    <div id="reg-error" style="margin-top:12px;font-size:12px;color:#C41B1B;text-align:center;display:none;"></div>
+    <div style="margin-top:16px;text-align:center;">
+      <a href="#" onclick="showLogin();return false;" style="font-size:12px;color:#1BB4D8;text-decoration:none;">¿Ya tienes cuenta? Iniciar sesión</a>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
