@@ -2457,6 +2457,75 @@ function showInviteModal(link, perfil) {
   var existing = document.getElementById('invite-modal');
   if(existing) existing.remove();
 
+  var overlay = document.createElement('div');
+  overlay.id = 'invite-modal';
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(13,30,51,0.5);z-index:9500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
+
+  var box = document.createElement('div');
+  box.style.cssText = 'background:#fff;border-radius:16px;padding:32px;width:520px;max-width:94vw;box-shadow:0 8px 40px rgba(13,30,51,0.15);';
+
+  var title = document.createElement('div');
+  title.style.cssText = 'font-size:18px;font-weight:800;color:#0D1E33;margin-bottom:6px;';
+  title.textContent = 'Link de invitación — ' + perfilLabel;
+
+  var sub = document.createElement('div');
+  sub.style.cssText = 'font-size:13px;color:#61758A;margin-bottom:16px;';
+  sub.textContent = 'Comparte este link. Es de un solo uso y expira cuando el usuario se registre.';
+
+  var linkBox = document.createElement('div');
+  linkBox.style.cssText = 'background:#EDF2F7;border-radius:8px;padding:12px 14px;font-size:12px;color:#0D1E33;word-break:break-all;margin-bottom:16px;border:1px solid #E2E8F0;';
+  linkBox.textContent = link;
+
+  var btns = document.createElement('div');
+  btns.style.cssText = 'display:flex;gap:10px;justify-content:flex-end;';
+
+  var btnClose = document.createElement('button');
+  btnClose.style.cssText = 'background:#F1F5F9;border:1px solid #E2E8F0;color:#374151;font-family:inherit;font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;cursor:pointer;';
+  btnClose.textContent = 'Cerrar';
+  btnClose.addEventListener('click', function(){ overlay.remove(); });
+
+  var btnCopy = document.createElement('button');
+  btnCopy.style.cssText = 'background:#1BB4D8;color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;border-radius:8px;cursor:pointer;';
+  btnCopy.textContent = 'Copiar link';
+  btnCopy.addEventListener('click', function(){
+    navigator.clipboard.writeText(link).then(function(){
+      btnCopy.textContent = '¡Copiado!';
+      setTimeout(function(){ btnCopy.textContent = 'Copiar link'; }, 2000);
+    });
+  });
+
+  btns.appendChild(btnClose);
+  btns.appendChild(btnCopy);
+  box.appendChild(title);
+  box.appendChild(sub);
+  box.appendChild(linkBox);
+  box.appendChild(btns);
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+}
+
+// ── Generar link de invitación desde menú Usuarios ──
+function generateInviteLink(perfil) {
+  if(!window._db) return;
+  var token = Math.random().toString(36).substr(2,12) + Date.now().toString(36);
+  window._db.collection('invites').doc(token).set({
+    perfil:perfil,
+    used:false,
+    createdAt: new Date().toISOString(),
+    createdBy: currentUserEmail
+  }).then(function(){
+    var link = window.location.origin + window.location.pathname + '?invite=' + token;
+    // Mostrar link en modal
+    showInviteModal(link, perfil);
+  }).catch(function(e){ alert('Error: ' + e.message); });
+}
+
+function showInviteModal(link, perfil) {
+  var perfilLabel = perfil==='now'?'NOW':perfil==='comercial'?'Comercial':'Admin';
+  var existing = document.getElementById('invite-modal');
+  if(existing) existing.remove();
+
   var modal = document.createElement('div');
   modal.id = 'invite-modal';
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(13,30,51,0.5);z-index:9500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
@@ -2464,16 +2533,11 @@ function showInviteModal(link, perfil) {
     '<div style="background:#fff;border-radius:16px;padding:32px;width:520px;max-width:94vw;box-shadow:0 8px 40px rgba(13,30,51,0.15);">' +
       '<div style="font-size:18px;font-weight:800;color:#0D1E33;margin-bottom:6px;">Link de invitación — '+perfilLabel+'</div>' +
       '<div style="font-size:13px;color:#61758A;margin-bottom:16px;">Comparte este link con el usuario. Es de un solo uso y expira cuando se registre.</div>' +
-      '<div style="background:#EDF2F7;border-radius:8px;padding:12px 14px;font-size:12px;color:#0D1E33;word-break:break-all;margin-bottom:16px;border:1px solid #E2E8F0;">'+link+'</div>' +
-      '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
-        '<button onclick="this.closest('#invite-modal').remove()" style="background:#F1F5F9;border:1px solid #E2E8F0;color:#374151;font-family:inherit;font-size:13px;font-weight:600;padding:9px 18px;border-radius:8px;cursor:pointer;">Cerrar</button>' +
-        '<button onclick="navigator.clipboard.writeText(''+link+'').then(function(){var b=this;b.textContent='¡Copiado!';setTimeout(function(){b.textContent='Copiar link';},2000);}.bind(this))" style="background:#1BB4D8;color:#fff;border:none;font-family:inherit;font-size:13px;font-weight:700;padding:9px 18px;border-radius:8px;cursor:pointer;">Copiar link</button>' +
-      '</div>' +
     '</div>';
 
-  // Fix: cerrar modal al hacer clic fuera
-  modal.addEventListener('click', function(e){ if(e.target===modal) modal.remove(); });
-  document.body.appendChild(modal);
+  overlay.appendChild(box);
+  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
 }
 
 </script>
