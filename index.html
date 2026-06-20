@@ -2521,20 +2521,9 @@ function generateInviteLink(perfil) {
   }).catch(function(e){ alert('Error: ' + e.message); });
 }
 
-function showInviteModal(link, perfil) {
-  var perfilLabel = perfil==='now'?'NOW':perfil==='comercial'?'Comercial':'Admin';
-  var existing = document.getElementById('invite-modal');
-  if(existing) existing.remove();
-
-  var modal = document.createElement('div');
-  modal.id = 'invite-modal';
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(13,30,51,0.5);z-index:9500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);';
-  modal.innerHTML =
-    '<div style="background:#fff;border-radius:16px;padding:32px;width:520px;max-width:94vw;box-shadow:0 8px 40px rgba(13,30,51,0.15);">' +
-      '<div style="font-size:18px;font-weight:800;color:#0D1E33;margin-bottom:6px;">Link de invitación — '+perfilLabel+'</div>' +
-
 
 </script>
+
 </div><!-- /app-shell -->
 
 <!-- REGISTRO POR INVITACIÓN -->
