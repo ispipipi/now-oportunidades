@@ -2532,13 +2532,7 @@ function showInviteModal(link, perfil) {
   modal.innerHTML =
     '<div style="background:#fff;border-radius:16px;padding:32px;width:520px;max-width:94vw;box-shadow:0 8px 40px rgba(13,30,51,0.15);">' +
       '<div style="font-size:18px;font-weight:800;color:#0D1E33;margin-bottom:6px;">Link de invitación — '+perfilLabel+'</div>' +
-      '<div style="font-size:13px;color:#61758A;margin-bottom:16px;">Comparte este link con el usuario. Es de un solo uso y expira cuando se registre.</div>' +
-    '</div>';
 
-  overlay.appendChild(box);
-  overlay.addEventListener('click', function(e){ if(e.target===overlay) overlay.remove(); });
-  document.body.appendChild(overlay);
-}
 
 </script>
 </div><!-- /app-shell -->
