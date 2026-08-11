@@ -910,7 +910,7 @@ function loadFromFirestore(){
 
 function saveOppsToFirestore(){
   if(!window._db||!window._auth.currentUser) return;
-  window._db.doc('data/opps').set({opps:OPPS,opp_detail:OPP_DETAIL,gantt_order:ganttOrder||OPPS.map(function(o){return o.id;}),updated:new Date().toISOString()})
+  window._db.doc('data/opps').set({opps:OPPS,opp_detail:OPP_DETAIL,gantt_order:normalizeGanttOrder(),updated:new Date().toISOString()})
     .catch(function(e){console.warn('saveOpps:',e);});
 }
 
@@ -1251,6 +1251,7 @@ function saveNew(){
   if(!name){document.getElementById('edit-name').focus();return;}
   var newId=Math.max.apply(null,OPPS.map(function(o){return o.id;}))+1;
   OPPS.push({id:newId,name:name,unit:document.getElementById('edit-unit').value||'General',unitColor:'#64748B',impact:document.getElementById('edit-impact').value,diff:document.getElementById('edit-diff').value,time:document.getElementById('edit-time').value||'Por definir',color:'#64748B'});
+  normalizeGanttOrder();
   OPP_DETAIL[newId]={desc:document.getElementById('edit-desc').value,resolves:getResolves(),how:document.getElementById('edit-how').value,tech:document.getElementById('edit-tech').value.split(',').map(function(t){return t.trim();}).filter(Boolean)};
   renderAll();saveOppsToFirestore();closeModal();
 }
@@ -1259,6 +1260,7 @@ function deleteOpp(id){
   if(!confirm('¿Eliminar esta oportunidad?')) return;
   var idx=OPPS.findIndex(function(o){return o.id===id;});
   if(idx!==-1) OPPS.splice(idx,1);
+  normalizeGanttOrder();
   renderAll();saveOppsToFirestore();
 }
 
@@ -1373,9 +1375,21 @@ function addWk(d,w){var x=new Date(d);x.setDate(x.getDate()+w*7);return x;}
 function fmtDateShort(d){return d.toLocaleDateString('es-CL',{day:'numeric',month:'short',year:'2-digit'});}
 function wkLabel(d){return d.toLocaleDateString('es-CL',{day:'numeric',month:'short'});}
 function isCurrWk(d){var now=new Date();return now>=d&&now<addWk(d,1);}
+function normalizeGanttOrder(){
+  var next=[];
+  if(!Array.isArray(ganttOrder)) ganttOrder=[];
+  ganttOrder.forEach(function(id){
+    if(OPPS.some(function(o){return o.id===id;})&&next.indexOf(id)===-1) next.push(id);
+  });
+  OPPS.forEach(function(o){
+    if(next.indexOf(o.id)===-1) next.push(o.id);
+  });
+  ganttOrder=next;
+  return ganttOrder;
+}
 
 function renderGantt(){
-  if(!ganttOrder) ganttOrder=OPPS.map(function(o){return o.id;});
+  normalizeGanttOrder();
   var start=ganttStart(),LABEL_W=260,WEEK_W=58;
   var totalWks=0;
   ganttOrder.forEach(function(id){var o=OPPS.find(function(x){return x.id===id;});if(o)totalWks+=weeksFrom(o.time);});
