@@ -773,6 +773,7 @@ const OPP_DETAIL = {
 var currentUserProfile = 'comercial';
 var currentUserEmail   = null;
 var currentUserName    = '';
+var DEMO_NO_LOGIN = true;
 var ADMIN_EMAILS = ['boss@npr.cl'];
 
 var PERMS = {
@@ -825,7 +826,26 @@ function doLogin(){
     });
 }
 
-function doLogout(){ window._auth.signOut(); }
+function doLogout(){ if(DEMO_NO_LOGIN) return; window._auth.signOut(); }
+
+function enterDemoMode(){
+  currentUserProfile='now';
+  currentUserEmail='demo@now.local';
+  currentUserName='Modo demo';
+  var loading=document.getElementById('app-loading');
+  var loginSc=document.getElementById('login-screen');
+  var registerSc=document.getElementById('register-screen');
+  var appShell=document.getElementById('app-shell');
+  if(loading) loading.style.display='none';
+  if(loginSc) loginSc.classList.remove('visible');
+  if(registerSc) registerSc.classList.remove('visible');
+  if(appShell){appShell.style.display='';appShell.style.display='flex';}
+  var emailEl=document.getElementById('sb-user-email');
+  if(emailEl) emailEl.textContent='Modo demo';
+  applyPermissions();
+  loadFromFirestore();
+  renderAll();
+}
 
 function sendPasswordReset(){
   var email = ((document.getElementById('login-email')||{}).value||'').trim();
@@ -939,6 +959,7 @@ function saveOppsToFirestore(){
 // Auth observer
 (function startAuth(){
   if(!window._auth){setTimeout(startAuth,150);return;}
+  if(DEMO_NO_LOGIN){enterDemoMode();return;}
   checkInviteToken();
   window._auth.onAuthStateChanged(function(user){
     var loading=document.getElementById('app-loading');
