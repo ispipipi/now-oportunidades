@@ -832,6 +832,11 @@ function enterDemoMode(){
   currentUserProfile='now';
   currentUserEmail='demo@now.local';
   currentUserName='Modo demo';
+  inviteToken=null;
+  invitePerfil=null;
+  if(window.location.search){
+    window.history.replaceState({},document.title,window.location.pathname);
+  }
   var loading=document.getElementById('app-loading');
   var loginSc=document.getElementById('login-screen');
   var registerSc=document.getElementById('register-screen');
@@ -845,6 +850,10 @@ function enterDemoMode(){
   applyPermissions();
   loadFromFirestore();
   renderAll();
+  setTimeout(function(){
+    if(loginSc) loginSc.classList.remove('visible');
+    if(registerSc) registerSc.classList.remove('visible');
+  },500);
 }
 
 function sendPasswordReset(){
@@ -868,6 +877,7 @@ function showLogin(){
 var inviteToken=null, invitePerfil=null;
 
 function checkInviteToken(){
+  if(DEMO_NO_LOGIN) return;
   var params = new URLSearchParams(window.location.search);
   var token = params.get('invite');
   if(!token) return;
