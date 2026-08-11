@@ -351,8 +351,9 @@ body{font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.65;ba
     <input class="auth-input" id="login-email" type="email" placeholder="tu@email.com" onkeydown="if(event.key==='Enter')doLogin()">
     <label class="auth-label">Contraseña</label>
     <input class="auth-input" id="login-password" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="auth-btn" onclick="doLogin()">Entrar</button>
+    <button class="auth-btn" id="login-submit" onclick="doLogin()">Entrar</button>
     <div class="auth-error" id="login-error"></div>
+    <a class="auth-link" onclick="sendPasswordReset()">Recuperar contraseña</a>
   </div>
 </div>
 
@@ -806,16 +807,37 @@ function doLogin(){
   var email = (document.getElementById('login-email')||{}).value||'';
   var pw    = (document.getElementById('login-password')||{}).value||'';
   var errEl = document.getElementById('login-error');
+  var btn = document.getElementById('login-submit');
   errEl.style.display='none';
   if(!email||!pw){errEl.textContent='Completa email y contraseña.';errEl.style.display='block';return;}
+  if(btn){btn.disabled=true;btn.textContent='Entrando...';}
   window._auth.signInWithEmailAndPassword(email.trim(),pw)
     .catch(function(e){
-      errEl.textContent = (e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'||e.code==='auth/user-not-found') ? 'Email o contraseña incorrectos.' : e.message;
+      var msg='No se pudo iniciar sesión.';
+      if(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'||e.code==='auth/user-not-found') msg='Email o contraseña incorrectos. Si entraste con invitación, usa el correo y clave que registraste.';
+      else if(e.code==='auth/too-many-requests') msg='Demasiados intentos. Espera unos minutos o recupera la contraseña.';
+      else if(e.code==='auth/network-request-failed') msg='No hay conexión con Firebase. Revisa internet y vuelve a intentar.';
+      else if(e.code==='auth/unauthorized-domain') msg='Este dominio no está autorizado en Firebase Auth.';
+      else if(e&&e.message) msg=e.message;
+      errEl.textContent = msg;
       errEl.style.display='block';
+      if(btn){btn.disabled=false;btn.textContent='Entrar';}
     });
 }
 
 function doLogout(){ window._auth.signOut(); }
+
+function sendPasswordReset(){
+  var email = ((document.getElementById('login-email')||{}).value||'').trim();
+  var errEl = document.getElementById('login-error');
+  if(!email){errEl.textContent='Escribe tu correo para enviar recuperación.';errEl.style.display='block';return;}
+  errEl.textContent='Enviando recuperación...';errEl.style.display='block';
+  window._auth.sendPasswordResetEmail(email).then(function(){
+    errEl.textContent='Listo. Si el correo existe, Firebase enviará un enlace de recuperación.';
+  }).catch(function(e){
+    errEl.textContent=(e.code==='auth/invalid-email')?'Email inválido.':(e.message||'No se pudo enviar la recuperación.');
+  });
+}
 
 function showLogin(){
   document.getElementById('register-screen').classList.remove('visible');
